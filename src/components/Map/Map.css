@@ -1,4 +1,4 @@
-/* src/components/Map/Map.css */
+/* src/components/Map/Map.css - Updated for dark mode and mobile */
 .map-container {
   height: calc(100vh - 80px);
   width: 100%;
@@ -7,6 +7,16 @@
   border-radius: 0 0 0 15px;
   overflow: hidden;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.map-container.dark .leaflet-control-attribution {
+  background-color: rgba(52, 58, 64, 0.8) !important;
+  color: #e4e6eb !important;
+}
+
+.map-container.dark .leaflet-control-attribution a {
+  color: #9ec5fe !important;
 }
 
 .score-marker {
@@ -60,17 +70,18 @@
   top: 10px;
   left: 50px;
   z-index: 1000;
-  background: white;
+  background: var(--card-background);
+  color: var(--text-color);
   padding: 15px;
   border-radius: 12px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 5px 15px var(--shadow-color);
   width: 320px;
   max-width: 90%;
   transition: all 0.3s ease;
 }
 
 .destination-controls:hover {
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 8px 20px var(--shadow-color);
 }
 
 .destination-search {
@@ -81,20 +92,22 @@
 .destination-search input {
   flex: 1;
   padding: 12px 15px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border-color);
   border-radius: 8px 0 0 8px;
   font-size: 15px;
+  background-color: var(--input-background);
+  color: var(--text-color);
   transition: border-color 0.3s ease;
 }
 
 .destination-search input:focus {
   outline: none;
-  border-color: #3a86ff;
+  border-color: var(--primary-color);
 }
 
 .destination-search button {
   padding: 12px 18px;
-  background-color: #3a86ff;
+  background-color: var(--primary-color);
   color: white;
   border: none;
   border-radius: 0 8px 8px 0;
@@ -104,26 +117,29 @@
 }
 
 .destination-search button:hover {
-  background-color: #2a75f0;
+  background-color: var(--primary-color-dark);
 }
 
 .destination-buttons {
   display: flex;
+  flex-wrap: wrap;
   gap: 10px;
 }
 
 .set-destination-btn, .clear-destination-btn, .analysis-btn {
   flex: 1;
   padding: 10px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border-color);
   border-radius: 8px;
-  background-color: #f8f9fa;
+  background-color: var(--card-background);
+  color: var(--text-color);
   cursor: pointer;
   font-size: 14px;
   transition: all 0.2s ease;
   display: flex;
   align-items: center;
   justify-content: center;
+  min-width: min(40%, 130px);
 }
 
 .set-destination-btn:before {
@@ -143,21 +159,21 @@
 
 .set-destination-btn:hover, .clear-destination-btn:hover, .analysis-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 3px 8px var(--shadow-color);
 }
 
 .set-destination-btn.active {
-  background-color: #e3f2fd;
-  border-color: #3a86ff;
-  color: #3a86ff;
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+  color: white;
   font-weight: bold;
   animation: pulse 1.5s infinite;
 }
 
 .analysis-btn.active {
-  background-color: #f0e6ff;
+  background-color: #9c27b0;
   border-color: #9c27b0;
-  color: #9c27b0;
+  color: white;
   font-weight: bold;
   animation: pulse 1.5s infinite;
 }
@@ -175,13 +191,13 @@
 }
 
 .clear-destination-btn {
-  background-color: #fff5f5;
-  border-color: #ffcdd2;
+  background-color: rgba(244, 67, 54, 0.1);
+  border-color: rgba(244, 67, 54, 0.3);
   color: #d32f2f;
 }
 
 .clear-destination-btn:hover {
-  background-color: #ffebee;
+  background-color: rgba(244, 67, 54, 0.2);
 }
 
 .walkability-legend {
@@ -189,10 +205,11 @@
   bottom: 30px;
   right: 20px;
   z-index: 1000;
-  background: white;
+  background: var(--card-background);
+  color: var(--text-color);
   padding: 15px;
   border-radius: 12px;
-  box-shadow: 0 3px 15px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 3px 15px var(--shadow-color);
   transition: transform 0.3s ease;
 }
 
@@ -204,7 +221,7 @@
   margin: 0 0 12px 0;
   font-size: 15px;
   text-align: center;
-  color: #2c3e50;
+  color: var(--text-color);
   position: relative;
   padding-bottom: 8px;
 }
@@ -216,7 +233,7 @@
   left: 25%;
   width: 50%;
   height: 2px;
-  background: linear-gradient(to right, transparent, #3a86ff, transparent);
+  background: linear-gradient(to right, transparent, var(--primary-color), transparent);
 }
 
 .legend-item {
@@ -224,7 +241,7 @@
   align-items: center;
   margin-bottom: 8px;
   font-size: 13px;
-  color: #2c3e50;
+  color: var(--text-color);
 }
 
 .legend-color {
@@ -232,8 +249,8 @@
   height: 18px;
   margin-right: 10px;
   border-radius: 50%;
-  border: 2px solid white;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  border: 2px solid var(--card-background);
+  box-shadow: 0 1px 3px var(--shadow-color);
 }
 
 /* Analysis overlay */
@@ -252,10 +269,11 @@
 }
 
 .analysis-instructions {
-  background-color: rgba(255, 255, 255, 0.9);
+  background-color: var(--card-background);
+  color: var(--text-color);
   padding: 15px 25px;
   border-radius: 30px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 15px var(--shadow-color);
   animation: fadeInOut 2s infinite;
 }
 
@@ -272,39 +290,83 @@
   100% { opacity: 0.8; }
 }
 
+/* Custom mobile zoom controls */
+.mobile-zoom-controls {
+  position: absolute;
+  bottom: 30px;
+  right: 20px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.zoom-control {
+  width: 40px;
+  height: 40px;
+  background-color: var(--card-background);
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
+  border-radius: 50%;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 8px var(--shadow-color);
+  transition: all 0.2s ease;
+}
+
+.zoom-control:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px var(--shadow-color);
+}
+
+.zoom-control:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 4px var(--shadow-color);
+}
+
 /* Responsive design */
+@media (max-width: 992px) {
+  .destination-controls {
+    width: 300px;
+    left: 20px;
+  }
+  
+  .walkability-legend {
+    bottom: 25px;
+    right: 15px;
+    padding: 12px;
+  }
+}
+
 @media (max-width: 768px) {
   .destination-controls {
-    width: calc(100% - 20px);
-    max-width: none;
     top: 10px;
     left: 10px;
-    padding: 10px;
-  }
-  
-  .destination-search input {
-    padding: 10px;
-  }
-  
-  .destination-search button {
-    padding: 10px;
+    width: calc(100% - 20px);
+    max-width: none;
+    padding: 12px;
   }
   
   .destination-buttons {
-    flex-direction: column;
-    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: space-between;
   }
   
-  .set-destination-btn, .clear-destination-btn, .analysis-btn {
-    padding: 8px;
+  .set-destination-btn, .analysis-btn, .clear-destination-btn {
+    min-width: calc(50% - 5px);
+    padding: 8px 5px;
     font-size: 13px;
   }
   
   .walkability-legend {
-    bottom: 15px;
+    bottom: 80px;
     right: 10px;
     padding: 10px;
     font-size: 12px;
+    max-width: 150px;
   }
   
   .legend-item {
@@ -316,46 +378,58 @@
     height: 14px;
     margin-right: 6px;
   }
+  
+  .mobile-zoom-controls {
+    bottom: 20px;
+    right: 10px;
+  }
+  
+  .zoom-control {
+    width: 36px;
+    height: 36px;
+    font-size: 18px;
+  }
+  
+  .analysis-instructions {
+    padding: 12px 20px;
+  }
+  
+  .analysis-instructions p {
+    font-size: 16px;
+  }
 }
 
-.dark {
-  background: #1d1f21!important;
-  color: #FAF9F6!important;
-}
-
-.dark > div > :is(h1, h2, h3, h4, h5, h6, p) {
-  background: #1d1f21!important;
-  color: #faf9f6!important;
-}
-
-nav.dark {
-  background: #27292b!important;
-  color: #FAF9F6!important;
-}
-
-nav.dark > * {
-  background: #27292b!important;
-  color: #FAF9F6!important;
-}
-
-nav.dark > div > * {
-  background: #27292b!important;
-  color: #FAF9F6!important;
-
-}
-
-nav.dark > select > * {
-  background: #27292b!important;
-  color: #FAF9F6!important;
-
-}
-
-.dark > div > * {
-  background: #353638!important;
-  color: #FAF9F6!important;
-}
-
-.dark > form > * {
-  background: #353638!important;
-  color: #FAF9F6!important;
+@media (max-width: 480px) {
+  .destination-search {
+    flex-direction: column;
+  }
+  
+  .destination-search input {
+    border-radius: 8px 8px 0 0;
+    border-bottom: none;
+  }
+  
+  .destination-search button {
+    border-radius: 0 0 8px 8px;
+  }
+  
+  .set-destination-btn, .analysis-btn, .clear-destination-btn {
+    flex: 1 0 100%;
+    margin-bottom: 5px;
+  }
+  
+  .walkability-legend {
+    bottom: 70px;
+    max-width: 120px;
+    padding: 8px;
+  }
+  
+  .walkability-legend h4 {
+    font-size: 13px;
+    margin-bottom: 8px;
+  }
+  
+  .legend-item {
+    font-size: 10px;
+  }
 }

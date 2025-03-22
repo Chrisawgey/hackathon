@@ -1,0 +1,141 @@
+/* src/Theme.css */
+:root {
+    --primary-color: #3a86ff;
+    --primary-color-dark: #2a75f0;
+    --text-color: #2c3e50;
+    --text-color-secondary: #64748b;
+    --background-color: #f8f9fa;
+    --card-background: #ffffff;
+    --border-color: #e9ecef;
+    --shadow-color: rgba(0, 0, 0, 0.1);
+    --success-color: #4CAF50;
+    --warning-color: #FFC107;
+    --danger-color: #F44336;
+    --report-btn-color: #ff6b6b;
+    --scenic-btn-color: #28a745;
+  }
+  
+  body.light {
+    --primary-color: #3a86ff;
+    --primary-color-dark: #2a75f0;
+    --text-color: #2c3e50;
+    --text-color-secondary: #64748b;
+    --background-color: #f8f9fa;
+    --card-background: #ffffff;
+    --border-color: #e9ecef;
+    --shadow-color: rgba(0, 0, 0, 0.1);
+    --input-background: #ffffff;
+    --navbar-background: linear-gradient(135deg, #4a6fff 0%, #3a86ff 100%);
+    --navbar-text: #ffffff;
+  }
+  
+  body.dark {
+    --primary-color: #3a86ff;
+    --primary-color-dark: #1d65e0;
+    --text-color: #e4e6eb;
+    --text-color-secondary: #b0b3b8;
+    --background-color: #18191a;
+    --card-background: #242526;
+    --border-color: #3a3b3c;
+    --shadow-color: rgba(0, 0, 0, 0.3);
+    --input-background: #3a3b3c;
+    --navbar-background: #242526;
+    --navbar-text: #e4e6eb;
+  }
+  
+  body {
+    background-color: var(--background-color);
+    color: var(--text-color);
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  
+  /* General component styles */
+  .card, .info-card, .info-panel, .score-display, .scenic-views, .route-info {
+    background-color: var(--card-background);
+    color: var(--text-color);
+    border-color: var(--border-color);
+    box-shadow: 0 4px 15px var(--shadow-color);
+  }
+  
+  .navbar {
+    background: var(--navbar-background);
+    color: var(--navbar-text);
+  }
+  
+  /* Form elements */
+  input, textarea, select {
+    background-color: var(--input-background);
+    color: var(--text-color);
+    border-color: var(--border-color);
+  }
+  
+  input:focus, textarea:focus, select:focus {
+    border-color: var(--primary-color);
+  }
+  
+  /* Theme toggle button */
+  .theme-toggle-btn {
+    background: none;
+    border: none;
+    color: inherit;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    border-radius: 8px;
+    margin-right: 15px;
+    transition: all 0.3s ease;
+  }
+  
+  .theme-toggle-btn:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+  }
+  
+  .theme-toggle-btn svg {
+    width: 24px;
+    height: 24px;
+  }
+  
+  /* Mobile responsiveness */
+  @media (max-width: 768px) {
+    .main-content {
+      flex-direction: column;
+    }
+    
+    .info-panel {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 60vh;
+      z-index: 1000;
+      border-radius: 20px 20px 0 0;
+    }
+    
+    .map-section {
+      height: 40vh;
+    }
+    
+    .theme-toggle-btn {
+      margin-right: 10px;
+    }
+  }
+  
+  @media (max-width: 576px) {
+    .navbar-brand h1 {
+      font-size: 20px;
+    }
+    
+    .score-categories, .metric {
+      padding: 10px;
+    }
+    
+    .route-metrics {
+      grid-template-columns: 1fr;
+    }
+    
+    .preference-option {
+      padding: 8px;
+      font-size: 14px;
+    }
+  }

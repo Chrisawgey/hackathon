@@ -1,13 +1,15 @@
-/* src/components/ScoreDisplay/ScoreDisplay.css */
+/* src/components/ScoreDisplay/ScoreDisplay.css - Updated for dark mode and responsive design */
 .score-display {
-  background-color: white;
+  background-color: var(--card-background);
+  color: var(--text-color);
   border-radius: 15px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 4px 15px var(--shadow-color);
   padding: 25px;
   width: 100%;
   overflow-y: auto;
   max-height: calc(100vh - 120px);
   animation: fadeIn 0.3s ease-in-out;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 @keyframes fadeIn {
@@ -28,14 +30,14 @@
   align-items: center;
   min-height: 250px;
   text-align: center;
-  color: #666;
+  color: var(--text-color-secondary);
   padding: 20px;
 }
 
 .empty-icon {
   font-size: 48px;
   margin-bottom: 20px;
-  color: #3a86ff;
+  color: var(--primary-color);
   animation: bounce 2s infinite;
 }
 
@@ -62,114 +64,101 @@
   left: 25%;
   width: 50%;
   height: 3px;
-  background: linear-gradient(to right, transparent, #3a86ff, transparent);
+  background: linear-gradient(to right, transparent, var(--primary-color), transparent);
 }
 
 .score-header h2 {
   margin: 0 0 8px 0;
-  color: #2c3e50;
+  color: var(--text-color);
   font-size: 24px;
   font-weight: 700;
 }
 
 .location-name {
-  color: #666;
+  color: var(--text-color-secondary);
   font-size: 16px;
   margin: 0;
   font-style: italic;
 }
 
-.overall-score-container {
+.remove-area-btn {
+  margin-top: 15px;
+  padding: 8px 16px;
+  background-color: rgba(244, 67, 54, 0.1);
+  color: #f44336;
+  border: 1px solid rgba(244, 67, 54, 0.3);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.remove-area-btn:hover {
+  background-color: rgba(244, 67, 54, 0.2);
+  transform: translateY(-2px);
+}
+
+.overall-score {
   display: flex;
-  flex-direction: column;
   align-items: center;
+  justify-content: center;
   margin-bottom: 30px;
   padding: 20px;
-  background-color: #f8f9fa;
+  gap: 20px;
+  background-color: var(--background-color);
   border-radius: 12px;
   transition: transform 0.3s ease;
 }
 
-.overall-score-container:hover {
+.overall-score:hover {
   transform: translateY(-3px);
 }
 
-.score-gauge {
-  width: 100%;
-  margin-bottom: 15px;
-}
-
-.gauge-bg {
-  height: 18px;
-  width: 100%;
-  background-color: #e9ecef;
-  border-radius: 10px;
-  overflow: hidden;
-  position: relative;
-}
-
-.gauge-fill {
-  height: 100%;
-  border-radius: 10px;
-  transition: width 1s ease-out, background-color 1s ease;
-}
-
-.gauge-markers {
+.score-circle {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
   display: flex;
-  justify-content: space-between;
-  width: 100%;
-  margin-top: 5px;
-  font-size: 12px;
-  color: #777;
-}
-
-.overall-score-value {
-  font-size: 42px;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
   font-weight: bold;
-  margin: 5px 0;
-  transition: color 0.3s ease;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  border: 3px solid white;
 }
 
-.overall-score-status {
-  font-weight: 600;
+.score-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.score-details h3 {
+  margin: 0 0 8px 0;
+  font-size: 22px;
+  color: var(--text-color);
+}
+
+.status {
   font-size: 18px;
-  color: #2c3e50;
+  font-weight: 600;
+  color: var(--text-color-secondary);
+  margin: 0;
 }
 
 .score-categories {
   margin-bottom: 30px;
 }
 
-.score-categories h3 {
-  margin: 0 0 20px 0;
-  font-size: 20px;
-  color: #2c3e50;
-  position: relative;
-  padding-left: 15px;
-}
-
-.score-categories h3:before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 5px;
-  background-color: #3a86ff;
-  border-radius: 10px;
-}
-
 .category {
   margin-bottom: 20px;
   padding: 15px;
   border-radius: 10px;
-  background-color: #f8f9fa;
+  background-color: var(--background-color);
   transition: transform 0.2s ease;
 }
 
 .category:hover {
   transform: translateX(5px);
-  background-color: #f0f4f8;
 }
 
 .category-header {
@@ -193,21 +182,23 @@
 .category h4 {
   margin: 0;
   font-size: 16px;
-  color: #2c3e50;
+  color: var(--text-color);
   flex: 1;
 }
 
 .category-score {
   font-weight: bold;
-  font-size: 18px;
+  font-size: 16px;
+  color: var(--text-color-secondary);
   transition: color 0.3s ease;
 }
 
 .score-bar-container {
-  background-color: #e9ecef;
+  background-color: rgba(0, 0, 0, 0.1);
   height: 10px;
   border-radius: 5px;
   overflow: hidden;
+  margin-bottom: 8px;
 }
 
 .score-bar {
@@ -236,49 +227,49 @@
 
 .ai-insights, .user-reports {
   margin-bottom: 30px;
-  padding: 20px;
-  border-radius: 12px;
-  background-color: #f8f9fa;
 }
 
 .ai-insights h3, .user-reports h3 {
-  margin: 0;
+  margin: 0 0 15px 0;
   font-size: 18px;
-  color: #2c3e50;
+  color: var(--text-color);
+  position: relative;
+  padding-left: 15px;
+  border-left: 4px solid var(--primary-color);
 }
 
 .insight-content {
-  background-color: white;
+  background-color: var(--background-color);
   padding: 15px;
   border-radius: 8px;
   margin-top: 15px;
-  border-left: 4px solid #3a86ff;
 }
 
 .insight-content p {
   margin: 0;
   line-height: 1.6;
-  color: #2c3e50;
+  color: var(--text-color);
 }
 
 .reports-list {
   padding: 0;
   list-style-type: none;
   margin-top: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
 }
 
 .report-item {
-  background-color: white;
+  background-color: var(--background-color);
   padding: 15px;
   border-radius: 8px;
-  margin-bottom: 15px;
-  border-left: 4px solid #3a86ff;
   transition: transform 0.2s ease;
 }
 
 .report-item:hover {
   transform: translateY(-3px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 8px var(--shadow-color);
 }
 
 .report-header {
@@ -286,6 +277,8 @@
   justify-content: space-between;
   margin-bottom: 10px;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
 .report-type {
@@ -300,46 +293,131 @@
 
 .report-severity {
   font-size: 13px;
-  color: #666;
+  color: var(--text-color-secondary);
 }
 
 .report-description {
   margin: 10px 0;
-  color: #333;
+  color: var(--text-color);
   line-height: 1.5;
 }
 
 .report-date {
   display: block;
-  color: #666;
+  color: var(--text-color-secondary);
   font-size: 12px;
   text-align: right;
   margin-top: 10px;
 }
 
 .no-reports {
-  background-color: white;
+  background-color: var(--background-color);
   padding: 15px;
   border-radius: 8px;
-  color: #666;
+  color: var(--text-color-secondary);
   text-align: center;
   margin-top: 15px;
+}
+
+/* Responsive design */
+@media (max-width: 992px) {
+  .score-display {
+    padding: 20px;
+  }
+  
+  .score-circle {
+    width: 70px;
+    height: 70px;
+    font-size: 28px;
+  }
+  
+  .score-details h3 {
+    font-size: 20px;
+  }
+  
+  .status {
+    font-size: 16px;
+  }
 }
 
 @media (max-width: 768px) {
   .score-display {
     padding: 15px;
+    border-radius: 20px 20px 0 0;
   }
   
-  .overall-score-value {
-    font-size: 36px;
+  .overall-score {
+    padding: 15px;
+    flex-direction: column;
+    text-align: center;
+    gap: 10px;
   }
   
-  .overall-score-status {
-    font-size: 16px;
+  .score-circle {
+    width: 60px;
+    height: 60px;
+    font-size: 24px;
   }
   
   .category {
-    padding: 10px;
+    padding: 12px;
+  }
+  
+  .category-icon {
+    width: 30px;
+    height: 30px;
+    font-size: 16px;
+  }
+  
+  .category h4 {
+    font-size: 14px;
+  }
+  
+  .category-score {
+    font-size: 14px;
+  }
+  
+  .report-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 480px) {
+  .score-header h2 {
+    font-size: 20px;
+  }
+  
+  .location-name {
+    font-size: 14px;
+  }
+  
+  .remove-area-btn {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+  
+  .score-details h3 {
+    font-size: 18px;
+  }
+  
+  .status {
+    font-size: 14px;
+  }
+  
+  .ai-insights h3, .user-reports h3 {
+    font-size: 16px;
+  }
+  
+  .insight-content {
+    padding: 12px;
+  }
+  
+  .insight-content p {
+    font-size: 14px;
+  }
+  
+  .report-item {
+    padding: 12px;
   }
 }
