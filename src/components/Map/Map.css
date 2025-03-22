@@ -57,8 +57,8 @@
 
 .destination-controls {
   position: absolute;
-  top: 10px;
-  left: 50px;
+  top: 20px;
+  left: 20px;
   z-index: 1000;
   background: white;
   padding: 15px;
@@ -112,7 +112,7 @@
   gap: 10px;
 }
 
-.set-destination-btn, .clear-destination-btn {
+.set-destination-btn, .clear-destination-btn, .analysis-btn {
   flex: 1;
   padding: 10px;
   border: 1px solid #ddd;
@@ -136,14 +136,28 @@
   margin-right: 5px;
 }
 
-.set-destination-btn:hover, .clear-destination-btn:hover {
+.analysis-btn:before {
+  content: '🔍';
+  margin-right: 5px;
+}
+
+.set-destination-btn:hover, .clear-destination-btn:hover, .analysis-btn:hover {
   transform: translateY(-2px);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
 }
 
 .set-destination-btn.active {
   background-color: #e3f2fd;
   border-color: #3a86ff;
   color: #3a86ff;
+  font-weight: bold;
+  animation: pulse 1.5s infinite;
+}
+
+.analysis-btn.active {
+  background-color: #f0e6ff;
+  border-color: #9c27b0;
+  color: #9c27b0;
   font-weight: bold;
   animation: pulse 1.5s infinite;
 }
@@ -222,6 +236,42 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
+/* Analysis overlay */
+.analysis-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(156, 39, 176, 0.2);
+  z-index: 900;
+  pointer-events: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.analysis-instructions {
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 15px 25px;
+  border-radius: 30px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  animation: fadeInOut 2s infinite;
+}
+
+.analysis-instructions p {
+  font-size: 18px;
+  font-weight: bold;
+  color: #9c27b0;
+  margin: 0;
+}
+
+@keyframes fadeInOut {
+  0% { opacity: 0.8; }
+  50% { opacity: 1; }
+  100% { opacity: 0.8; }
+}
+
 /* Responsive design */
 @media (max-width: 768px) {
   .destination-controls {
@@ -245,7 +295,7 @@
     gap: 8px;
   }
   
-  .set-destination-btn, .clear-destination-btn {
+  .set-destination-btn, .clear-destination-btn, .analysis-btn {
     padding: 8px;
     font-size: 13px;
   }
@@ -272,5 +322,13 @@
     width: 40px;
     height: 40px;
     font-size: 15px;
+  }
+  
+  .analysis-instructions {
+    padding: 10px 15px;
+  }
+  
+  .analysis-instructions p {
+    font-size: 14px;
   }
 }
