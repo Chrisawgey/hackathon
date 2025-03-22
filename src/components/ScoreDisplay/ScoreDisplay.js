@@ -57,7 +57,7 @@ const ScoreDisplay = ({ selectedArea, onRemoveArea }) => {
       </div>
 
       <div className="overall-score">
-        <span 
+        <div 
           className="score-circle"
           style={{ 
             backgroundColor: getScoreColor(selectedArea.overallScore),
@@ -65,7 +65,7 @@ const ScoreDisplay = ({ selectedArea, onRemoveArea }) => {
           }}
         >
           {selectedArea.overallScore}
-        </span>
+        </div>
         <div className="score-details">
           <h3>Overall Walkability</h3>
           <p className="status">{getStatusText(selectedArea.overallScore)}</p>
