@@ -319,12 +319,12 @@
 }
 
 .dark {
-  background-color: #1d1f21!important;
+  background: #1d1f21!important;
   color: #FAF9F6!important;
 }
 
 .dark > div > :is(h1, h2, h3, h4, h5, h6, p) {
-  background-color: #1d1f21!important;
+  background: #1d1f21!important;
   color: #faf9f6!important;
 }
 
@@ -334,34 +334,28 @@ nav.dark {
 }
 
 nav.dark > * {
-  background-color: #27292b!important;
+  background: #27292b!important;
   color: #FAF9F6!important;
 }
 
 nav.dark > div > * {
-  background-color: #27292b!important;
-  color: #FAF9F6!important;
-
-}
-
-nav.dark > div > * > * > * > :is(h1, h2, h3, h4, h5, h6, p) {
-  background-color: #27292b!important;
+  background: #27292b!important;
   color: #FAF9F6!important;
 
 }
 
 nav.dark > select > * {
-  background-color: #27292b!important;
+  background: #27292b!important;
   color: #FAF9F6!important;
 
 }
 
 .dark > div > * {
-  background-color: #353638!important;
+  background: #353638!important;
   color: #FAF9F6!important;
 }
 
 .dark > form > * {
-  background-color: #353638!important;
+  background: #353638!important;
   color: #FAF9F6!important;
 }
