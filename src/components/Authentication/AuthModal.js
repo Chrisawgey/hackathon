@@ -1,36 +1,31 @@
 // src/components/Authentication/AuthModal.js
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Login from './Login';
 import Signup from './Signup';
 import './Auth.css';
 
-const AuthModal = ({ show, onClose, initialMode = 'login' }) => {
+const AuthModal = ({ show, onClose, initialMode = 'signup' }) => {
   const [mode, setMode] = useState(initialMode);
 
-  if (!show) {
-    return null;
-  }
+  useEffect(() => {
+    if (show) {
+      setMode(initialMode);
+    }
+  }, [initialMode, show]);
 
-  const handleSwitchToLogin = () => {
-    setMode('login');
-  };
+  if (!show) return null;
 
-  const handleSwitchToSignup = () => {
-    setMode('signup');
-  };
+  const switchToLogin = () => setMode('login');
+  const switchToSignup = () => setMode('signup');
 
   return (
     <div className="modal-backdrop">
-      {mode === 'login' ? (
-        <Login 
-          onClose={onClose} 
-          onSwitchToSignup={handleSwitchToSignup} 
-        />
-      ) : (
-        <Signup 
-          onClose={onClose} 
-          onSwitchToLogin={handleSwitchToLogin} 
-        />
+      {mode === 'login' && (
+        <Login onClose={onClose} onSwitchToSignup={switchToSignup} />
+      )}
+
+      {mode === 'signup' && (
+        <Signup onClose={onClose} onSwitchToLogin={switchToLogin} />
       )}
     </div>
   );
