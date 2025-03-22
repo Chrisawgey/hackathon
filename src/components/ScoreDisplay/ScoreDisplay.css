@@ -125,6 +125,7 @@
   font-weight: bold;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
   border: 3px solid white;
+  padding: 20px;
 }
 
 .score-details {
