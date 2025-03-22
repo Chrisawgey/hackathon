@@ -24,7 +24,7 @@
 }
 
 .scenic-header h2 {
-  color: #2c3e50;
+  color: var(--text-color);
   margin-bottom: 15px;
   position: relative;
   padding-bottom: 15px;
@@ -44,7 +44,7 @@
 
 .scenic-intro {
   margin-bottom: 25px;
-  color: #495057;
+  color: var(--text-color);
   line-height: 1.7;
   max-width: 700px;
   margin: 0 auto;
@@ -63,7 +63,7 @@
   overflow: hidden;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
   transition: all 0.3s ease;
-  background-color: white;
+  background-color: var(--background-color);
   cursor: pointer;
   position: relative;
   display: flex;
@@ -135,7 +135,7 @@
 
 .scenic-description {
   margin: 0 0 15px 0;
-  color: #495057;
+  color: var(--text-color);
   line-height: 1.6;
   font-size: 15px;
 }

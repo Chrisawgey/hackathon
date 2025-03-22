@@ -90,7 +90,6 @@ const Navbar = ({ onReportIssue, onShowScenicViews, showingScenicViews }) => {
               <div className="user-greeting">
                 {user.displayName ? `Hi, ${user.displayName.split(' ')[0]}` : 'My Account'}
               </div>
-              <button className="profile-btn">My Profile</button>
               <button className="logout-btn" onClick={handleLogout}>
                 Logout
               </button>
