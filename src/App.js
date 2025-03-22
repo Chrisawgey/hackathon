@@ -1,4 +1,4 @@
-// src/App.js - Updated with RouteOptions moved from Navbar to Map
+// src/App.js - Updated with simplified route info section
 import React, { useState, useEffect } from 'react';
 import WalkabilityMap from './components/Map/Map';
 import Navbar from './components/Navigation/Navbar';
@@ -255,6 +255,16 @@ function App() {
     setShowInfoPanel(!showInfoPanel);
   };
 
+  // Get route type icon
+  const getRouteTypeIcon = (type) => {
+    switch(type) {
+      case 'safest': return '🛡️';
+      case 'scenic': return '🌳';
+      case 'accessible': return '♿';
+      default: return '⚡'; // fastest
+    }
+  };
+
   return (
     <ThemeProvider>
       <div className="app">
@@ -324,7 +334,10 @@ function App() {
             ) : selectedRoute ? (
               <div className="route-info">
                 <div className="route-info-header">
-                  <h3>Route Information</h3>
+                  <h3>
+                    <span className="route-type-icon">{getRouteTypeIcon(selectedRoute.routeType)}</span>
+                    {selectedRoute.routeType.charAt(0).toUpperCase() + selectedRoute.routeType.slice(1)} Route
+                  </h3>
                   <button 
                     className="close-btn" 
                     onClick={() => setSelectedRoute(null)}
@@ -343,25 +356,6 @@ function App() {
                   <div className="metric">
                     <div className="metric-value">{selectedRoute.walkabilityScore}</div>
                     <div className="metric-label">Walkability</div>
-                  </div>
-                </div>
-                
-                <div className="route-preferences">
-                  <div className={`preference-option ${selectedRoute.routeType === 'fastest' ? 'active' : ''}`}
-                    onClick={() => handleRouteTypeChange('fastest')}>
-                    Fastest
-                  </div>
-                  <div className={`preference-option ${selectedRoute.routeType === 'safest' ? 'active' : ''}`}
-                    onClick={() => handleRouteTypeChange('safest')}>
-                    Safest
-                  </div>
-                  <div className={`preference-option ${selectedRoute.routeType === 'scenic' ? 'active' : ''}`}
-                    onClick={() => handleRouteTypeChange('scenic')}>
-                    Scenic
-                  </div>
-                  <div className={`preference-option ${selectedRoute.routeType === 'accessible' ? 'active' : ''}`}
-                    onClick={() => handleRouteTypeChange('accessible')}>
-                    Accessible
                   </div>
                 </div>
                 
