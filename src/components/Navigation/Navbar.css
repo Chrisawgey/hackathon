@@ -1,146 +1,298 @@
 /* src/components/Navigation/Navbar.css */
 .navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(135deg, #4a6fff 0%, #3a86ff 100%);
+  color: white;
+  padding: 0 25px;
+  height: 80px;
+  box-shadow: 0 3px 15px rgba(0, 0, 0, 0.15);
+  position: relative;
+  z-index: 100;
+}
+
+.navbar-brand {
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  font-size: 32px;
+  margin-right: 15px;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+.navbar-brand h1 {
+  font-size: 26px;
+  margin: 0;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+.navbar-menu {
+  display: flex;
+  align-items: center;
+}
+
+.route-selection {
+  margin-right: 20px;
+  display: flex;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.15);
+  padding: 5px 10px;
+  border-radius: 8px;
+  backdrop-filter: blur(5px);
+}
+
+.route-selection label {
+  margin-right: 10px;
+  font-weight: 500;
+}
+
+.route-selection select {
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: none;
+  font-size: 15px;
+  background-color: white;
+  color: #3a86ff;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.route-selection select:hover {
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+}
+
+.route-selection select:focus {
+  outline: none;
+}
+
+.report-btn {
+  background-color: #ff6b6b;
+  border: none;
+  color: white;
+  padding: 10px 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-right: 20px;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 3px 10px rgba(255, 107, 107, 0.3);
+}
+
+.report-btn:before {
+  content: '🚨';
+  margin-right: 8px;
+}
+
+.report-btn:hover {
+  background-color: #ff5252;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+}
+
+.report-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 5px rgba(255, 107, 107, 0.3);
+}
+
+.auth-section {
+  display: flex;
+  align-items: center;
+}
+
+.user-greeting {
+  margin-right: 15px;
+  font-weight: 500;
+}
+
+.login-btn, .signup-btn, .profile-btn, .logout-btn {
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: none;
+  margin-left: 10px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+.login-btn {
+  background-color: transparent;
+  border: 2px solid white;
+  color: white;
+}
+
+.login-btn:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
+}
+
+.signup-btn, .profile-btn {
+  background-color: white;
+  color: #3a86ff;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+}
+
+.signup-btn:hover, .profile-btn:hover {
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+.logout-btn {
+  background-color: #f8f9fa;
+  color: #dc3545;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+}
+
+.logout-btn:hover {
+  background-color: #fff5f5;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+.scenic-views-btn {
+  background-color: #28a745;
+  border: none;
+  color: white;
+  padding: 10px 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-right: 20px;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 3px 10px rgba(40, 167, 69, 0.3);
+}
+
+.scenic-views-btn:before {
+  content: '🌳';
+  margin-right: 8px;
+}
+
+.scenic-views-btn:hover {
+  background-color: #218838;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
+}
+
+.scenic-views-btn.active {
+  background-color: #1e7e34;
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.2);
+  transform: translateY(0);
+}
+
+.menu-toggle {
+  display: none;
+  flex-direction: column;
+  cursor: pointer;
+  z-index: 2000;
+}
+
+.menu-toggle span {
+  display: block;
+  width: 28px;
+  height: 3px;
+  background-color: white;
+  margin-bottom: 5px;
+  border-radius: 3px;
+  transition: all 0.3s ease;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .navbar {
+    padding: 0 15px;
+  }
+  
+  .menu-toggle {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: #3a86ff;
-    color: white;
-    padding: 0 20px;
-    height: 80px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
   }
   
-  .navbar-brand {
-    display: flex;
-    align-items: center;
+  .menu-toggle.active span:nth-child(1) {
+    transform: rotate(45deg) translate(5px, 5px);
   }
   
-  .logo {
-    font-size: 28px;
-    margin-right: 10px;
+  .menu-toggle.active span:nth-child(2) {
+    opacity: 0;
   }
   
-  .navbar-brand h1 {
-    font-size: 24px;
-    margin: 0;
+  .menu-toggle.active span:nth-child(3) {
+    transform: rotate(-45deg) translate(5px, -5px);
   }
-  
+
   .navbar-menu {
-    display: flex;
-    align-items: center;
+    position: fixed;
+    top: 80px;
+    left: 0;
+    background-color: #3a86ff;
+    width: 100%;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 20px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    transform: translateY(-150%);
+    transition: transform 0.4s ease;
+    z-index: 1000;
+    border-radius: 0 0 15px 15px;
+  }
+  
+  .navbar-menu.active {
+    transform: translateY(0);
+  }
+  
+  .route-selection, .report-btn, .scenic-views-btn, .auth-section {
+    margin: 10px 0;
+    width: 100%;
   }
   
   .route-selection {
-    margin-right: 20px;
+    flex-direction: column;
+    align-items: flex-start;
+    background: none;
+    padding: 0;
   }
   
   .route-selection label {
-    margin-right: 10px;
+    margin-bottom: 5px;
   }
   
   .route-selection select {
-    padding: 8px;
-    border-radius: 4px;
-    border: none;
-    font-size: 14px;
-  }
-  
-  .report-btn {
-    background-color: #ff6b6b;
-    border: none;
-    color: white;
-    padding: 8px 16px;
-    border-radius: 4px;
-    cursor: pointer;
-    margin-right: 20px;
-    font-weight: bold;
-  }
-  
-  .report-btn:hover {
-    background-color: #ff5252;
+    width: 100%;
   }
   
   .auth-section {
     display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
   }
   
   .login-btn, .signup-btn, .profile-btn, .logout-btn {
-    padding: 8px 16px;
-    border-radius: 4px;
-    border: none;
-    margin-left: 10px;
-    cursor: pointer;
-    font-weight: bold;
+    width: 48%;
+    margin: 5px 0;
+    text-align: center;
   }
   
-  .login-btn {
-    background-color: transparent;
-    border: 1px solid white;
-    color: white;
+  .user-greeting {
+    width: 100%;
+    margin-bottom: 10px;
+    text-align: center;
   }
-  
-  .signup-btn, .profile-btn {
-    background-color: white;
-    color: #3a86ff;
-  }
-  
-  .logout-btn {
-    background-color: #f8f9fa;
-    color: #dc3545;
-  }
-  
-  .menu-toggle {
-    display: none;
-    flex-direction: column;
-    cursor: pointer;
-  }
-  
-  .menu-toggle span {
-    display: block;
-    width: 25px;
-    height: 3px;
-    background-color: white;
-    margin-bottom: 5px;
-    border-radius: 3px;
-  }
-  
-  /* Responsive design */
-  @media (max-width: 768px) {
-    .menu-toggle {
-      display: flex;
-    }
-  
-    .navbar-menu {
-      position: fixed;
-      top: 80px;
-      left: 0;
-      background-color: #3a86ff;
-      width: 100%;
-      flex-direction: column;
-      align-items: flex-start;
-      padding: 20px;
-      box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
-      transform: translateY(-200%);
-      transition: transform 0.3s ease;
-      z-index: 1000;
-    }
-  
-    .navbar-menu.active {
-      transform: translateY(0);
-    }
-  
-    .route-selection, .report-btn, .auth-section {
-      margin: 10px 0;
-      width: 100%;
-    }
-  
-    .auth-section {
-      display: flex;
-      justify-content: space-between;
-    }
-  
-    .login-btn, .signup-btn, .profile-btn, .logout-btn {
-      width: 48%;
-      margin: 0;
-    }
-  }
+}

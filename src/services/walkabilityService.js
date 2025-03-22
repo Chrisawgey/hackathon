@@ -29,6 +29,14 @@ import {
     return R * c;
   };
   
+  // Check if coordinates are near Kean University
+  const isNearKeanUniversity = (latitude, longitude, radiusKm = 1) => {
+    const keanLat = 40.6769;
+    const keanLng = -74.2390;
+    const distance = calculateDistance(latitude, longitude, keanLat, keanLng);
+    return distance <= radiusKm;
+  };
+  
   // Get walkability score for a specific area
   export const getWalkabilityScore = async (latitude, longitude) => {
     try {
@@ -79,6 +87,45 @@ import {
       // this would call your AI model or an external API
       
       const mockCalculateScore = async () => {
+        // Generate Kean-specific scores if the location is near Kean University
+        if (isNearKeanUniversity(latitude, longitude)) {
+          // Custom walkability data for Kean University and surrounding areas
+          const keanScores = {
+            sidewalkScore: 82, // Good sidewalks around campus
+            crosswalkScore: 78, // Decent crosswalks 
+            lightingScore: 85, // Well-lit campus
+            transitScore: 70, // Some transit options
+            airQualityScore: 75 // Moderate air quality
+          };
+          
+          // Calculate overall score
+          const overallScore = Math.round(
+            (keanScores.sidewalkScore * 0.3) + 
+            (keanScores.crosswalkScore * 0.25) + 
+            (keanScores.lightingScore * 0.2) + 
+            (keanScores.transitScore * 0.15) + 
+            (keanScores.airQualityScore * 0.1)
+          );
+          
+          // Kean University-specific insights
+          let insights = "Kean University campus offers very good walkability with well-maintained sidewalks and adequate lighting. ";
+          
+          if (keanScores.transitScore < 75) {
+            insights += "Public transit options could be improved, especially for connections to off-campus locations. ";
+          }
+          
+          if (keanScores.crosswalkScore < 80) {
+            insights += "Some crosswalks at busy intersections could benefit from better markings and signals. ";
+          }
+          
+          return {
+            overallScore,
+            ...keanScores,
+            insights,
+            nearbyReportCount: 3 // Mock some reports
+          };
+        }
+        
         // Get nearby reports to factor into score
         const reportsRef = collection(db, "reports");
         const reportsQuery = query(reportsRef);

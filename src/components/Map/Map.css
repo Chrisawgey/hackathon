@@ -4,6 +4,9 @@
   width: 100%;
   position: relative;
   z-index: 1;
+  border-radius: 0 0 0 15px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
 .score-marker {
@@ -11,56 +14,97 @@
   justify-content: center;
   align-items: center;
   border-radius: 50%;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+  animation: markerAppear 0.5s ease-out;
+}
+
+.score-marker-mobile div {
+  width: 44px !important;
+  height: 44px !important;
+  font-size: 16px !important;
+}
+
+@keyframes markerAppear {
+  from {
+    opacity: 0;
+    transform: scale(0.8) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
 }
 
 .score-marker div {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 30px;
-  height: 30px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   color: white;
   font-weight: bold;
-  font-size: 12px;
+  font-size: 14px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  border: 2px solid white;
+  transition: transform 0.2s ease;
+}
+
+.score-marker div:hover {
+  transform: scale(1.1);
+  z-index: 1000;
 }
 
 .destination-controls {
   position: absolute;
-  top: 20px;
-  left: 20px;
+  top: 10px;
+  left: 50px;
   z-index: 1000;
   background: white;
   padding: 15px;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-  width: 300px;
+  border-radius: 12px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  width: 320px;
   max-width: 90%;
+  transition: all 0.3s ease;
+}
+
+.destination-controls:hover {
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
 }
 
 .destination-search {
   display: flex;
-  margin-bottom: 10px;
+  margin-bottom: 15px;
 }
 
 .destination-search input {
   flex: 1;
-  padding: 10px;
+  padding: 12px 15px;
   border: 1px solid #ddd;
-  border-radius: 4px 0 0 4px;
-  font-size: 14px;
+  border-radius: 8px 0 0 8px;
+  font-size: 15px;
+  transition: border-color 0.3s ease;
+}
+
+.destination-search input:focus {
+  outline: none;
+  border-color: #3a86ff;
 }
 
 .destination-search button {
-  padding: 10px 15px;
+  padding: 12px 18px;
   background-color: #3a86ff;
   color: white;
   border: none;
-  border-radius: 0 4px 4px 0;
+  border-radius: 0 8px 8px 0;
   cursor: pointer;
   font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.destination-search button:hover {
+  background-color: #2a75f0;
 }
 
 .destination-buttons {
@@ -70,17 +114,30 @@
 
 .set-destination-btn, .clear-destination-btn {
   flex: 1;
-  padding: 8px;
+  padding: 10px;
   border: 1px solid #ddd;
-  border-radius: 4px;
+  border-radius: 8px;
   background-color: #f8f9fa;
   cursor: pointer;
-  font-size: 12px;
-  transition: all 0.2s;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.set-destination-btn:before {
+  content: '📍';
+  margin-right: 5px;
+}
+
+.clear-destination-btn:before {
+  content: '🗑️';
+  margin-right: 5px;
 }
 
 .set-destination-btn:hover, .clear-destination-btn:hover {
-  background-color: #e9ecef;
+  transform: translateY(-2px);
 }
 
 .set-destination-btn.active {
@@ -88,12 +145,29 @@
   border-color: #3a86ff;
   color: #3a86ff;
   font-weight: bold;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(58, 134, 255, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(58, 134, 255, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(58, 134, 255, 0);
+  }
 }
 
 .clear-destination-btn {
-  background-color: #f8d7da;
-  border-color: #f5c2c7;
-  color: #842029;
+  background-color: #fff5f5;
+  border-color: #ffcdd2;
+  color: #d32f2f;
+}
+
+.clear-destination-btn:hover {
+  background-color: #ffebee;
 }
 
 .walkability-legend {
@@ -102,46 +176,85 @@
   right: 20px;
   z-index: 1000;
   background: white;
-  padding: 10px 15px;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  padding: 15px;
+  border-radius: 12px;
+  box-shadow: 0 3px 15px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease;
+}
+
+.walkability-legend:hover {
+  transform: translateY(-5px);
 }
 
 .walkability-legend h4 {
-  margin: 0 0 10px 0;
-  font-size: 14px;
+  margin: 0 0 12px 0;
+  font-size: 15px;
   text-align: center;
+  color: #2c3e50;
+  position: relative;
+  padding-bottom: 8px;
+}
+
+.walkability-legend h4:after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 25%;
+  width: 50%;
+  height: 2px;
+  background: linear-gradient(to right, transparent, #3a86ff, transparent);
 }
 
 .legend-item {
   display: flex;
   align-items: center;
-  margin-bottom: 5px;
-  font-size: 12px;
+  margin-bottom: 8px;
+  font-size: 13px;
+  color: #2c3e50;
 }
 
 .legend-color {
-  width: 15px;
-  height: 15px;
+  width: 18px;
+  height: 18px;
   margin-right: 10px;
   border-radius: 50%;
+  border: 2px solid white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 /* Responsive design */
 @media (max-width: 768px) {
   .destination-controls {
-    width: calc(100% - 40px);
+    width: calc(100% - 20px);
     max-width: none;
+    top: 10px;
+    left: 10px;
+    padding: 10px;
+  }
+  
+  .destination-search input {
+    padding: 10px;
+  }
+  
+  .destination-search button {
+    padding: 10px;
   }
   
   .destination-buttons {
     flex-direction: column;
+    gap: 8px;
+  }
+  
+  .set-destination-btn, .clear-destination-btn {
+    padding: 8px;
+    font-size: 13px;
   }
   
   .walkability-legend {
-    bottom: 20px;
+    bottom: 15px;
     right: 10px;
-    padding: 8px 12px;
+    padding: 10px;
+    font-size: 12px;
   }
   
   .legend-item {
@@ -149,32 +262,15 @@
   }
   
   .legend-color {
-    width: 12px;
-    height: 12px;
+    width: 14px;
+    height: 14px;
     margin-right: 6px;
   }
-
-.walkability-legend {
-  position: absolute;
-  bottom: 30px;
-  right: 20px;
-  z-index: 1000;
-  background: white;
-  padding: 10px;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-}
-
-.legend-item {
-  display: flex;
-  align-items: center;
-  margin-bottom: 5px;
-}
-
-.legend-color {
-  width: 20px;
-  height: 20px;
-  margin-right: 10px;
-  border-radius: 50%;
-}
+  
+  /* Make score markers easier to tap on mobile */
+  .score-marker div {
+    width: 40px;
+    height: 40px;
+    font-size: 15px;
+  }
 }

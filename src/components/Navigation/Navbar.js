@@ -4,7 +4,7 @@ import { subscribeToAuthChanges, logOut, getCurrentUser } from '../../services/a
 import AuthModal from '../Authentication/AuthModal';
 import './Navbar.css';
 
-const Navbar = ({ onRouteTypeChange, onReportIssue }) => {
+const Navbar = ({ onRouteTypeChange, onReportIssue, onShowScenicViews, showingScenicViews }) => {
   const [user, setUser] = useState(null);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
@@ -48,15 +48,12 @@ const Navbar = ({ onRouteTypeChange, onReportIssue }) => {
         </div>
 
         <div className={`navbar-menu ${showMobileMenu ? 'active' : ''}`}>
-          <div className="route-selection">
-            <label>Route Type:</label>
-            <select onChange={(e) => onRouteTypeChange(e.target.value)}>
-              <option value="fastest">Fastest</option>
-              <option value="safest">Safest</option>
-              <option value="scenic">Most Scenic</option>
-              <option value="accessible">Most Accessible</option>
-            </select>
-          </div>
+          <button 
+            className={`scenic-views-btn ${showingScenicViews ? 'active' : ''}`} 
+            onClick={onShowScenicViews}
+          >
+            {showingScenicViews ? 'Hide Scenic Views' : 'Show Scenic Views'}
+          </button>
 
           <button className="report-btn" onClick={onReportIssue}>
             Report Issue

@@ -31,6 +31,32 @@ function SetViewOnChange({ coords }) {
   return null;
 }
 
+// This component handles map click events
+function MapClickHandler({ isSettingDestination, onMapClick }) {
+  const map = useMap();
+  
+  useEffect(() => {
+    if (!map) return;
+    
+    // Function to handle map clicks
+    const handleClick = (e) => {
+      if (isSettingDestination) {
+        onMapClick(e);
+      }
+    };
+    
+    // Add click listener
+    map.on('click', handleClick);
+    
+    // Cleanup listener when component unmounts or dependencies change
+    return () => {
+      map.off('click', handleClick);
+    };
+  }, [map, isSettingDestination, onMapClick]);
+  
+  return null;
+}
+
 const WalkabilityMap = ({ 
   walkabilityData, 
   onAreaSelect, 
@@ -44,7 +70,19 @@ const WalkabilityMap = ({
   const [destinationMarker, setDestinationMarker] = useState(null);
   const [destinationAddress, setDestinationAddress] = useState('');
   const [isSettingDestination, setIsSettingDestination] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const mapRef = useRef(null);
+
+  // Check if we're on mobile device
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    
+    checkMobile(); // Check on initial load
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   // Update position when userLocation changes
   useEffect(() => {
@@ -55,25 +93,22 @@ const WalkabilityMap = ({
 
   // Get color based on walkability score
   const getScoreColor = (score) => {
-    if (score >= 80) return '#4CAF50'; // Green
-    if (score >= 60) return '#FFC107'; // Yellow
-    if (score >= 40) return '#FF9800'; // Orange
+    if (score >= 70) return '#4CAF50'; // Green
+    if (score >= 40) return '#FFC107'; // Yellow
     return '#F44336'; // Red
   };
 
   // Handle map click for setting destination
   const handleMapClick = (e) => {
-    if (isSettingDestination) {
-      const { lat, lng } = e.latlng;
-      setDestinationMarker([lat, lng]);
-      
-      // Calculate route if we have both origin and destination
-      if (userLocation) {
-        onCalculateRoute(userLocation, [lat, lng]);
-      }
-      
-      setIsSettingDestination(false);
+    const { lat, lng } = e.latlng;
+    setDestinationMarker([lat, lng]);
+    
+    // Calculate route if we have both origin and destination
+    if (userLocation) {
+      onCalculateRoute(userLocation, [lat, lng]);
     }
+    
+    setIsSettingDestination(false);
   };
 
   // Handle setting destination from address search
@@ -105,6 +140,18 @@ const WalkabilityMap = ({
       console.error("Error geocoding address:", error);
       alert("Could not find that address. Please try another location.");
     }
+  };
+
+  // Create a custom score marker icon with improved mobile interactions
+  const createScoreMarkerIcon = (score) => {
+    const scoreColor = getScoreColor(score);
+    
+    return L.divIcon({
+      className: `score-marker ${isMobile ? 'score-marker-mobile' : ''}`,
+      html: `<div style="background-color: ${scoreColor};">${score}</div>`,
+      iconSize: [36, 36],
+      iconAnchor: [18, 18]
+    });
   };
 
   return (
@@ -145,14 +192,16 @@ const WalkabilityMap = ({
         zoom={15} 
         style={{ height: "100%", width: "100%" }} 
         ref={mapRef}
-        whenCreated={(map) => {
-          map.on('click', handleMapClick);
-          mapRef.current = map;
-        }}
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
+        
+        {/* Add the map click handler */}
+        <MapClickHandler 
+          isSettingDestination={isSettingDestination} 
+          onMapClick={handleMapClick} 
         />
         
         {/* Update view when position changes */}
@@ -181,24 +230,26 @@ const WalkabilityMap = ({
           <Marker 
             key={point.id} 
             position={point.position}
-            icon={L.divIcon({
-              className: 'score-marker',
-              html: `<div style="background-color: ${getScoreColor(point.score)};">${point.score}</div>`,
-              iconSize: [30, 30],
-              iconAnchor: [15, 15]
-            })}
+            icon={createScoreMarkerIcon(point.score)}
             eventHandlers={{
               click: () => {
                 onAreaSelect(point.id);
+                // On mobile, we don't want to show the popup to avoid confusing the user
+                if (isMobile && mapRef.current) {
+                  const map = mapRef.current;
+                  map._leaflet_id && map._leaflet.closePopup();
+                }
               }
             }}
           >
-            <Popup>
-              <div>
-                <h3>Walkability Score: {point.score}/100</h3>
-                <p>{point.description}</p>
-              </div>
-            </Popup>
+            {!isMobile && (
+              <Popup>
+                <div>
+                  <h3>Walkability Score: {point.score}/100</h3>
+                  <p>{point.description}</p>
+                </div>
+              </Popup>
+            )}
           </Marker>
         ))}
         
@@ -220,15 +271,11 @@ const WalkabilityMap = ({
         <h4>Walkability Score</h4>
         <div className="legend-item">
           <div className="legend-color" style={{ backgroundColor: '#4CAF50' }}></div>
-          <span>Excellent (80-100)</span>
+          <span>Good (70-100)</span>
         </div>
         <div className="legend-item">
           <div className="legend-color" style={{ backgroundColor: '#FFC107' }}></div>
-          <span>Good (60-79)</span>
-        </div>
-        <div className="legend-item">
-          <div className="legend-color" style={{ backgroundColor: '#FF9800' }}></div>
-          <span>Fair (40-59)</span>
+          <span>Moderate (40-69)</span>
         </div>
         <div className="legend-item">
           <div className="legend-color" style={{ backgroundColor: '#F44336' }}></div>

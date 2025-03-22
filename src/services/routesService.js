@@ -214,15 +214,64 @@ import {
   // Get route suggestions based on user's current location
   export const getRouteSuggestions = async (latitude, longitude) => {
     try {
-      // In a real app, this would identify nearby points of interest to suggest as destinations
-      // For the MVP, we'll return mock suggestions
-      
       // Make sure we have valid coordinates
       latitude = parseFloat(latitude);
       longitude = parseFloat(longitude);
       
       if (isNaN(latitude) || isNaN(longitude)) {
         throw new Error("Invalid coordinates provided");
+      }
+      
+      // Check if near Kean University (defined as within ~1km)
+      const isNearKean = (Math.abs(latitude - 40.6769) < 0.01) && (Math.abs(longitude - (-74.2390)) < 0.01);
+      
+      if (isNearKean) {
+        // Kean University specific destinations
+        return {
+          success: true,
+          suggestions: [
+            {
+              name: "Liberty Hall Museum",
+              type: "culture",
+              location: [40.6742, -74.2365],
+              walkabilityScore: 88,
+              distance: "0.4 km",
+              description: "Historic mansion and museum with beautiful grounds"
+            },
+            {
+              name: "Harwood Arena",
+              type: "sports",
+              location: [40.6773, -74.2408],
+              walkabilityScore: 90,
+              distance: "0.2 km",
+              description: "State-of-the-art athletic facility"
+            },
+            {
+              name: "Kean University Student Center",
+              type: "campus",
+              location: [40.6758, -74.2401],
+              walkabilityScore: 95,
+              distance: "0.1 km",
+              description: "Center of student life with food and study spaces"
+            },
+            {
+              name: "Elizabeth River Trail",
+              type: "nature",
+              location: [40.6800, -74.2340],
+              walkabilityScore: 82,
+              distance: "0.5 km",
+              description: "Scenic walking path along the Elizabeth River"
+            },
+            {
+              name: "University Center",
+              type: "dining",
+              location: [40.6761, -74.2405],
+              walkabilityScore: 93,
+              distance: "0.15 km",
+              description: "Multiple dining options and gathering spaces"
+            }
+          ]
+        };
       }
       
       // Mock data for popular destinations

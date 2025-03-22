@@ -6,9 +6,9 @@
 }
 
 body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: 'Segoe UI', 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
   line-height: 1.6;
-  color: #333;
+  color: #2c3e50;
   background-color: #f8f9fa;
 }
 
@@ -16,17 +16,21 @@ body {
   display: flex;
   flex-direction: column;
   height: 100vh;
+  overflow: hidden;
 }
 
 .main-content {
   display: flex;
   flex: 1;
   overflow: hidden;
+  position: relative;
 }
 
 .map-section {
   flex: 1;
   position: relative;
+  overflow: hidden;
+  transition: height 0.3s ease, width 0.3s ease;
 }
 
 .info-panel {
@@ -35,6 +39,10 @@ body {
   background-color: #f8f9fa;
   overflow-y: auto;
   border-left: 1px solid #e9ecef;
+  transition: all 0.3s ease;
+  box-shadow: -5px 0 15px rgba(0, 0, 0, 0.08);
+  z-index: 10;
+  position: relative;
 }
 
 .loading-overlay {
@@ -43,27 +51,42 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(255, 255, 255, 0.8);
+  background-color: rgba(255, 255, 255, 0.9);
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   z-index: 1000;
+  backdrop-filter: blur(5px);
 }
 
 .spinner {
-  width: 40px;
-  height: 40px;
-  border: 4px solid #f3f3f3;
-  border-top: 4px solid #3a86ff;
+  width: 50px;
+  height: 50px;
+  border: 5px solid rgba(58, 134, 255, 0.2);
+  border-top: 5px solid #3a86ff;
   border-radius: 50%;
   animation: spin 1s linear infinite;
-  margin-bottom: 15px;
+  margin-bottom: 20px;
 }
 
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
+}
+
+.loading-overlay p {
+  font-size: 18px;
+  font-weight: 600;
+  color: #3a86ff;
+  margin-top: 10px;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 0.7; }
+  50% { opacity: 1; }
+  100% { opacity: 0.7; }
 }
 
 .modal-backdrop {
@@ -72,163 +95,362 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.6);
   z-index: 1050;
   display: flex;
   justify-content: center;
   align-items: center;
+  backdrop-filter: blur(5px);
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 .info-card {
   background-color: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  padding: 15px;
-  margin-bottom: 15px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin-bottom: 20px;
+  transition: transform 0.2s ease;
+}
+
+.info-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
 }
 
 .info-card h3 {
   color: #3a86ff;
-  margin-bottom: 10px;
-  font-size: 18px;
+  margin-bottom: 15px;
+  font-size: 20px;
+  border-left: 4px solid #3a86ff;
+  padding-left: 10px;
 }
 
-.route-info {
-  padding: 15px;
-  background-color: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+.destination-input {
+  display: flex;
   margin-bottom: 15px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.destination-input input {
+  flex: 1;
+  padding: 12px 15px;
+  border: 1px solid #ddd;
+  border-right: none;
+  border-radius: 8px 0 0 8px;
+  font-size: 16px;
+  transition: border-color 0.3s ease;
+}
+
+.destination-input input:focus {
+  outline: none;
+  border-color: #3a86ff;
+}
+
+.destination-input button {
+  padding: 12px 20px;
+  background-color: #3a86ff;
+  color: white;
+  border: none;
+  border-radius: 0 8px 8px 0;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.destination-input button:hover {
+  background-color: #2a75f0;
+}
+
+/* Route Info Styles */
+.route-info {
+  padding: 25px;
+  background-color: white;
+  border-radius: 16px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+  animation: slideIn 0.3s ease-in-out;
+  border: 1px solid #f0f0f0;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .route-info-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
+  margin-bottom: 20px;
+  position: relative;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #f5f7fa;
 }
 
 .route-info-header h3 {
   margin: 0;
-  color: #3a86ff;
+  color: #1a202c;
+  font-size: 22px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.route-info-header h3::before {
+  content: "🧭";
+  display: inline-block;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  height: 36px;
+  width: 36px;
+  border-radius: 50%;
+  background-color: #f5f7fa;
+  color: #64748b;
+  font-size: 20px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.close-btn:hover {
+  background-color: #e2e8f0;
+  color: #334155;
+  transform: rotate(90deg);
 }
 
 .route-metrics {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 15px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+  margin-bottom: 25px;
 }
 
 .metric {
+  background-color: #f8fafc;
+  padding: 16px;
+  border-radius: 12px;
   text-align: center;
-  flex: 1;
+  transition: transform 0.2s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #f1f5f9;
+}
+
+.metric:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+.metric-icon {
+  font-size: 24px;
+  margin-bottom: 8px;
 }
 
 .metric-value {
-  font-size: 20px;
-  font-weight: bold;
+  font-size: 22px;
+  font-weight: 700;
+  color: #0ea5e9;
   margin-bottom: 5px;
 }
 
 .metric-label {
-  font-size: 12px;
-  color: #666;
+  font-size: 14px;
+  color: #64748b;
+  font-weight: 500;
 }
 
-.route-warning {
-  padding: 10px;
-  background-color: #fff3cd;
-  border-left: 4px solid #ffc107;
-  margin-top: 10px;
-}
-
-.destination-input {
-  display: flex;
-  margin-bottom: 15px;
-}
-
-.destination-input input {
-  flex: 1;
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 4px 0 0 4px;
-  font-size: 16px;
-}
-
-.destination-input button {
-  padding: 10px 15px;
-  background-color: #3a86ff;
-  color: white;
-  border: none;
-  border-radius: 0 4px 4px 0;
-  cursor: pointer;
-}
-
-.preferences-toggle {
-  display: flex;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  overflow: hidden;
-  margin-bottom: 15px;
+.route-preferences {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-bottom: 25px;
 }
 
 .preference-option {
-  flex: 1;
-  padding: 8px;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 12px 10px;
   text-align: center;
   cursor: pointer;
-  background-color: white;
-  transition: background-color 0.2s ease;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.preference-option:hover {
+  background-color: #f1f5f9;
+  border-color: #cbd5e1;
+}
+
+.preference-icon {
+  font-size: 20px;
 }
 
 .preference-option.active {
+  background-color: #0ea5e9;
+  color: white;
+  border-color: #0ea5e9;
+  box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+}
+
+.route-warning {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+  background-color: #fff8dd;
+  border-radius: 12px;
+  margin-top: 15px;
+  border: 1px solid #fde68a;
+}
+
+.warning-icon {
+  font-size: 22px;
+  flex-shrink: 0;
+  color: #f59e0b;
+}
+
+.warning-text {
+  flex: 1;
+  font-size: 14px;
+  color: #92400e;
+  line-height: 1.5;
+}
+
+/* Mobile panel toggle buttons */
+.mobile-panel-toggle {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 12px;
   background-color: #3a86ff;
   color: white;
+  border: none;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  z-index: 900;
+  box-shadow: 0 -3px 10px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.mobile-panel-toggle.show-panel:hover {
+  transform: translateY(-5px);
+}
+
+.mobile-panel-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 36px;
+  height: 36px;
+  background-color: #f0f4f8;
+  border: none;
+  border-radius: 50%;
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #64748b;
+  z-index: 100;
+  display: none;
 }
 
 /* Responsive Design */
 @media (max-width: 992px) {
-  .main-content {
-    flex-direction: column;
-  }
-  
-  .map-section {
-    height: 60vh;
-  }
-  
   .info-panel {
-    width: 100%;
-    height: 40vh;
-    border-left: none;
-    border-top: 1px solid #e9ecef;
+    width: 350px;
   }
 }
 
 @media (max-width: 768px) {
+  .main-content {
+    flex-direction: column;
+    height: calc(100vh - 80px);
+  }
+  
+  .map-section {
+    height: 100%;
+    transition: height 0.3s ease;
+  }
+  
+  .map-section-collapsed {
+    height: 40vh;
+  }
+  
   .info-panel {
-    padding: 10px;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 60vh;
+    max-height: 70vh;
+    padding: 15px;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    border-left: none;
+    box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    transition: transform 0.3s ease;
+  }
+  
+  .info-panel-hidden {
+    transform: translateY(100%);
+  }
+  
+  .mobile-panel-toggle {
+    display: block;
+  }
+  
+  .mobile-panel-close {
+    display: flex;
   }
   
   .route-metrics {
-    flex-direction: column;
+    grid-template-columns: 1fr;
   }
   
-  .metric {
-    margin-bottom: 10px;
+  .route-preferences {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
 @media (max-width: 576px) {
   .navbar-brand h1 {
-    font-size: 18px;
-  }
-  
-  .map-section {
-    height: 50vh;
+    font-size: 20px;
   }
   
   .info-panel {
-    height: 50vh;
+    padding: 15px 10px;
   }
   
   .destination-input {
@@ -236,11 +458,16 @@ body {
   }
   
   .destination-input input {
-    border-radius: 4px;
-    margin-bottom: 10px;
+    border-radius: 8px 8px 0 0;
+    border-right: 1px solid #ddd;
+    border-bottom: none;
   }
   
   .destination-input button {
-    border-radius: 4px;
+    border-radius: 0 0 8px 8px;
+  }
+  
+  .route-info {
+    padding: 15px;
   }
 }
