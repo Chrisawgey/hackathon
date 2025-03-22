@@ -98,6 +98,14 @@ const WalkabilityMap = ({
       setPosition(userLocation);
     }
   }, [userLocation]);
+  
+  // Clear destination marker when route is no longer selected
+  useEffect(() => {
+    if (!selectedRoute) {
+      setDestinationMarker(null);
+      setDestinationAddress('');
+    }
+  }, [selectedRoute]);
 
   // Get color based on walkability score
   const getScoreColor = (score) => {
@@ -129,6 +137,11 @@ const WalkabilityMap = ({
     // Request walkability data for this location
     if (onRequestWalkabilityData) {
       onRequestWalkabilityData(lat, lng);
+      
+      // Clear the marker after a short delay (enough time for visual feedback)
+      setTimeout(() => {
+        setAnalysisMarker(null);
+      }, 500);
     }
     
     // Exit analysis mode
@@ -214,6 +227,8 @@ const WalkabilityMap = ({
           >
             {isAnalysisMode ? 'Click on map to analyze' : 'Analyze any location'}
           </button>
+          
+
         </div>
       </div>
       
