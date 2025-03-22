@@ -6,7 +6,7 @@ import ScoreDisplay from './components/ScoreDisplay/ScoreDisplay';
 import ReportForm from './components/UserReports/ReportForm';
 import ScenicViews from './components/ScenicViews/ScenicViews';
 import { subscribeToAuthChanges } from './services/authService';
-import { submitWalkabilityReport } from './services/reportsService';
+import { submitWalkabilityReport } from './services/mockReportsService'; // Changed from reportsService to mockReportsService
 import { getOptimizedRoute } from './services/routesService';
 import { getWalkabilityScore } from './services/walkabilityService';
 import './App.css';
