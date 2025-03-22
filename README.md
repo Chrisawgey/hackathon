@@ -26,4 +26,7 @@ WalkScore AI is a web application that calculates and displays walkability score
 
 1. **Clone the Repository:**
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/Chrisawgey/hackathon.git
+   ```
+2. **Write npm install into your command prompt**
+3. **Write npm start into your command prompt**
