@@ -1,0 +1,178 @@
+/* src/components/UserReports/ReportForm.css */
+.report-form-container {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+    width: 90%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
+    z-index: 1100;
+  }
+  
+  .report-form-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    border-bottom: 1px solid #e9ecef;
+  }
+  
+  .report-form-header h2 {
+    margin: 0;
+    font-size: 20px;
+    color: #3a86ff;
+  }
+  
+  .close-btn {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #666;
+  }
+  
+  .report-form {
+    padding: 20px;
+  }
+  
+  .form-group {
+    margin-bottom: 20px;
+  }
+  
+  .form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #333;
+  }
+  
+  .form-group select,
+  .form-group textarea,
+  .form-group input[type="text"],
+  .form-group input[type="file"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+  }
+  
+  .form-group textarea {
+    resize: vertical;
+  }
+  
+  .severity-options {
+    display: flex;
+    gap: 15px;
+  }
+  
+  .severity-option {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+  }
+  
+  .severity-option input {
+    margin-right: 5px;
+  }
+  
+  .image-preview {
+    margin-top: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 5px;
+    max-height: 150px;
+    overflow: hidden;
+  }
+  
+  .image-preview img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+  }
+  
+  .location-group {
+    border: 1px solid #e9ecef;
+    padding: 15px;
+    border-radius: 4px;
+    background-color: #f8f9fa;
+  }
+  
+  .location-inputs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  
+  .input-group {
+    flex: 1;
+  }
+  
+  .input-group label {
+    font-size: 14px;
+    margin-bottom: 5px;
+  }
+  
+  .use-location-btn {
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    width: 100%;
+  }
+  
+  .use-location-btn:hover {
+    background-color: #5a6268;
+  }
+  
+  .form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+  }
+  
+  .cancel-btn, .submit-btn {
+    padding: 10px 20px;
+    border-radius: 4px;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  
+  .cancel-btn {
+    background-color: #f8f9fa;
+    color: #6c757d;
+  }
+  
+  .submit-btn {
+    background-color: #3a86ff;
+    color: white;
+  }
+  
+  .submit-btn:hover {
+    background-color: #2a75f0;
+  }
+  
+  @media (max-width: 576px) {
+    .location-inputs {
+      flex-direction: column;
+      gap: 15px;
+    }
+    
+    .form-actions {
+      flex-direction: column;
+    }
+    
+    .cancel-btn, .submit-btn {
+      width: 100%;
+    }
+  }
