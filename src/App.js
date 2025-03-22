@@ -1,10 +1,11 @@
-// src/App.js - Updated with simplified route info section
+// src/App.js - Complete with AR Navigation feature
 import React, { useState, useEffect } from 'react';
 import WalkabilityMap from './components/Map/Map';
 import Navbar from './components/Navigation/Navbar';
 import ScoreDisplay from './components/ScoreDisplay/ScoreDisplay';
 import ReportForm from './components/UserReports/ReportForm';
 import ScenicViews from './components/ScenicViews/ScenicViews';
+import ARNavigation from './components/AR/ARNavigation';
 import { ThemeProvider } from './context/ThemeContext';
 import { subscribeToAuthChanges } from './services/authService';
 import { submitWalkabilityReport } from './services/mockReportsService';
@@ -25,6 +26,7 @@ function App() {
   const [showScenicViews, setShowScenicViews] = useState(false);
   const [showInfoPanel, setShowInfoPanel] = useState(true); // Track panel visibility
   const [isMobile, setIsMobile] = useState(false); // Track if we're on mobile
+  const [showARNavigation, setShowARNavigation] = useState(false);
   
   // Check if we're on mobile and update state
   useEffect(() => {
@@ -364,6 +366,13 @@ function App() {
                     <strong>Warning:</strong> {selectedRoute.warnings[0]}
                   </div>
                 )}
+                
+                <button 
+                  className="ar-nav-btn" 
+                  onClick={() => setShowARNavigation(true)}
+                >
+                  View in AR Navigation
+                </button>
               </div>
             ) : (
               <ScoreDisplay 
@@ -374,6 +383,18 @@ function App() {
           </div>
         </div>
         
+        {/* Floating AR navigation button (for mobile) */}
+        {selectedRoute && isMobile && !showARNavigation && (
+          <div className="ar-button-container">
+            <button 
+              className="ar-nav-btn" 
+              onClick={() => setShowARNavigation(true)}
+            >
+              Start AR Navigation
+            </button>
+          </div>
+        )}
+        
         {showReportForm && (
           <div className="modal-backdrop">
             <ReportForm 
@@ -382,6 +403,14 @@ function App() {
               currentLocation={userLocation}
             />
           </div>
+        )}
+        
+        {showARNavigation && selectedRoute && (
+          <ARNavigation 
+            routePoints={selectedRoute.points}
+            active={showARNavigation}
+            onClose={() => setShowARNavigation(false)}
+          />
         )}
       </div>
     </ThemeProvider>

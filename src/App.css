@@ -471,3 +471,46 @@ body {
     padding: 15px;
   }
 }
+/* Add this to your App.css */
+.ar-button-container {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 900;
+  width: 90%;
+  max-width: 400px;
+  display: flex;
+  justify-content: center;
+}
+
+.ar-nav-btn {
+  background-color: #3a86ff;
+  color: white;
+  border: none;
+  padding: 15px 25px;
+  border-radius: 50px;
+  font-weight: bold;
+  font-size: 16px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+}
+
+.ar-nav-btn:before {
+  content: '👁️';
+  margin-right: 8px;
+  font-size: 20px;
+}
+
+.ar-nav-btn:hover {
+  background-color: #2a75f0;
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+}
+
+.ar-nav-btn:active {
+  transform: translateY(-1px);
+}
