@@ -31,6 +31,32 @@ function SetViewOnChange({ coords }) {
   return null;
 }
 
+// This component handles map click events
+function MapClickHandler({ isSettingDestination, onMapClick }) {
+  const map = useMap();
+  
+  useEffect(() => {
+    if (!map) return;
+    
+    // Function to handle map clicks
+    const handleClick = (e) => {
+      if (isSettingDestination) {
+        onMapClick(e);
+      }
+    };
+    
+    // Add click listener
+    map.on('click', handleClick);
+    
+    // Cleanup listener when component unmounts or dependencies change
+    return () => {
+      map.off('click', handleClick);
+    };
+  }, [map, isSettingDestination, onMapClick]);
+  
+  return null;
+}
+
 const WalkabilityMap = ({ 
   walkabilityData, 
   onAreaSelect, 
@@ -55,25 +81,22 @@ const WalkabilityMap = ({
 
   // Get color based on walkability score
   const getScoreColor = (score) => {
-    if (score >= 80) return '#4CAF50'; // Green
-    if (score >= 60) return '#FFC107'; // Yellow
-    if (score >= 40) return '#FF9800'; // Orange
+    if (score >= 70) return '#4CAF50'; // Green
+    if (score >= 40) return '#FFC107'; // Yellow
     return '#F44336'; // Red
   };
 
   // Handle map click for setting destination
   const handleMapClick = (e) => {
-    if (isSettingDestination) {
-      const { lat, lng } = e.latlng;
-      setDestinationMarker([lat, lng]);
-      
-      // Calculate route if we have both origin and destination
-      if (userLocation) {
-        onCalculateRoute(userLocation, [lat, lng]);
-      }
-      
-      setIsSettingDestination(false);
+    const { lat, lng } = e.latlng;
+    setDestinationMarker([lat, lng]);
+    
+    // Calculate route if we have both origin and destination
+    if (userLocation) {
+      onCalculateRoute(userLocation, [lat, lng]);
     }
+    
+    setIsSettingDestination(false);
   };
 
   // Handle setting destination from address search
@@ -145,14 +168,16 @@ const WalkabilityMap = ({
         zoom={15} 
         style={{ height: "100%", width: "100%" }} 
         ref={mapRef}
-        whenCreated={(map) => {
-          map.on('click', handleMapClick);
-          mapRef.current = map;
-        }}
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
+        
+        {/* Add the map click handler */}
+        <MapClickHandler 
+          isSettingDestination={isSettingDestination} 
+          onMapClick={handleMapClick} 
         />
         
         {/* Update view when position changes */}
@@ -220,15 +245,11 @@ const WalkabilityMap = ({
         <h4>Walkability Score</h4>
         <div className="legend-item">
           <div className="legend-color" style={{ backgroundColor: '#4CAF50' }}></div>
-          <span>Excellent (80-100)</span>
+          <span>Good (70-100)</span>
         </div>
         <div className="legend-item">
           <div className="legend-color" style={{ backgroundColor: '#FFC107' }}></div>
-          <span>Good (60-79)</span>
-        </div>
-        <div className="legend-item">
-          <div className="legend-color" style={{ backgroundColor: '#FF9800' }}></div>
-          <span>Fair (40-59)</span>
+          <span>Moderate (40-69)</span>
         </div>
         <div className="legend-item">
           <div className="legend-color" style={{ backgroundColor: '#F44336' }}></div>
