@@ -21,6 +21,25 @@ function App() {
   const [user, setUser] = useState(null);
   const [selectedRoute, setSelectedRoute] = useState(null);
   const [showScenicViews, setShowScenicViews] = useState(false);
+  const [showInfoPanel, setShowInfoPanel] = useState(true); // Track panel visibility
+  const [isMobile, setIsMobile] = useState(false); // Track if we're on mobile
+  
+  // Check if we're on mobile and update state
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+      // On mobile, default to having the panel hidden
+      if (window.innerWidth <= 768) {
+        setShowInfoPanel(false);
+      } else {
+        setShowInfoPanel(true);
+      }
+    };
+    
+    checkMobile(); // Check on initial load
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   // Subscribe to auth state changes
   useEffect(() => {
@@ -98,6 +117,10 @@ function App() {
     const area = walkabilityData.find(item => item.id === areaId);
     if (area) {
       setSelectedArea(area);
+      // On mobile, show the info panel when an area is selected
+      if (isMobile) {
+        setShowInfoPanel(true);
+      }
     }
   };
 
@@ -128,6 +151,11 @@ function App() {
           preference: routePreference,
           ...result.route
         });
+        
+        // On mobile, show the info panel when a route is calculated
+        if (isMobile) {
+          setShowInfoPanel(true);
+        }
       } else {
         console.error("Error calculating route:", result.error);
         alert("Could not calculate route. Please try again.");
@@ -160,6 +188,26 @@ function App() {
     }
   };
 
+  // Handle selecting a scenic spot as a destination
+  const handleScenicSpotSelect = (location, name) => {
+    if (location && location.length === 2) {
+      // Calculate route from user location to the scenic spot
+      if (userLocation) {
+        calculateRoute(userLocation, location);
+        
+        // Hide the scenic views panel after selection
+        setShowScenicViews(false);
+      } else {
+        alert("Could not determine your current location. Please try again.");
+      }
+    }
+  };
+
+  // Toggle the info panel visibility (mainly for mobile)
+  const toggleInfoPanel = () => {
+    setShowInfoPanel(!showInfoPanel);
+  };
+
   return (
     <div className="app">
       <Navbar 
@@ -171,12 +219,18 @@ function App() {
           }
           setShowReportForm(true);
         }}
-        onShowScenicViews={() => setShowScenicViews(!showScenicViews)}
+        onShowScenicViews={() => {
+          setShowScenicViews(!showScenicViews);
+          // On mobile, always show the panel when scenic views is activated
+          if (isMobile && !showScenicViews) {
+            setShowInfoPanel(true);
+          }
+        }}
         showingScenicViews={showScenicViews}
       />
       
       <div className="main-content">
-        <div className="map-section">
+        <div className={`map-section ${isMobile && showInfoPanel ? 'map-section-collapsed' : ''}`}>
           <WalkabilityMap 
             walkabilityData={walkabilityData}
             onAreaSelect={handleAreaSelect}
@@ -194,9 +248,30 @@ function App() {
           )}
         </div>
         
-        <div className="info-panel">
+        {/* Mobile toggle button for info panel */}
+        {isMobile && selectedArea && !showInfoPanel && (
+          <button 
+            className="mobile-panel-toggle show-panel" 
+            onClick={toggleInfoPanel}
+            aria-label="Show details"
+          >
+            <span>↑ View Details ↑</span>
+          </button>
+        )}
+        
+        <div className={`info-panel ${!showInfoPanel ? 'info-panel-hidden' : ''}`}>
+          {isMobile && (
+            <button 
+              className="mobile-panel-close"
+              onClick={toggleInfoPanel}
+              aria-label="Close panel"
+            >
+              ×
+            </button>
+          )}
+          
           {showScenicViews ? (
-            <ScenicViews />
+            <ScenicViews onSelectDestination={handleScenicSpotSelect} />
           ) : selectedRoute ? (
             <div className="route-info">
               <div className="route-info-header">
