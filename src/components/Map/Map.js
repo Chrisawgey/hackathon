@@ -179,8 +179,8 @@ const WalkabilityMap = ({
   };
 
   return (
-    <div className="map-container">
-      <div className="destination-controls">
+    <div className="map-container theme">
+      <div className="destination-controls theme">
         <form onSubmit={handleAddressSearch} className="destination-search">
           <input
             type="text"

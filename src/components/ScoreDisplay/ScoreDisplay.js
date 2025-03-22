@@ -42,7 +42,7 @@ const ScoreDisplay = ({ selectedArea, onRemoveArea }) => {
   };
 
   return (
-    <div className="score-display">
+    <div className="score-display theme">
       <div className="score-header">
         <h2>Area Walkability Analysis</h2>
         <p className="location-name">{selectedArea.name || 'Selected Area'}</p>
@@ -58,7 +58,7 @@ const ScoreDisplay = ({ selectedArea, onRemoveArea }) => {
 
       <div className="overall-score">
         <div 
-          className="score-circle" 
+          className="score-circle"
           style={{ 
             backgroundColor: getScoreColor(selectedArea.overallScore),
             color: selectedArea.overallScore >= 60 ? '#333' : 'white'
@@ -87,7 +87,7 @@ const ScoreDisplay = ({ selectedArea, onRemoveArea }) => {
               }}
             ></div>
           </div>
-          <span className="category-score">{selectedArea.sidewalkScore}</span>
+          <span className="category-score">{getStatusText(selectedArea.sidewalkScore)}</span>
         </div>
 
         <div className="category">
@@ -104,7 +104,7 @@ const ScoreDisplay = ({ selectedArea, onRemoveArea }) => {
               }}
             ></div>
           </div>
-          <span className="category-score">{selectedArea.crosswalkScore}</span>
+          <span className="category-score">{getStatusText(selectedArea.crosswalkScore)}</span>
         </div>
 
         <div className="category">
@@ -121,7 +121,7 @@ const ScoreDisplay = ({ selectedArea, onRemoveArea }) => {
               }}
             ></div>
           </div>
-          <span className="category-score">{selectedArea.lightingScore}</span>
+          <span className="category-score">{getStatusText(selectedArea.lightingScore)}</span>
         </div>
 
         <div className="category">
@@ -138,7 +138,7 @@ const ScoreDisplay = ({ selectedArea, onRemoveArea }) => {
               }}
             ></div>
           </div>
-          <span className="category-score">{selectedArea.transitScore}</span>
+          <span className="category-score">{getStatusText(selectedArea.transitScore)}</span>
         </div>
 
         <div className="category">
@@ -155,7 +155,7 @@ const ScoreDisplay = ({ selectedArea, onRemoveArea }) => {
               }}
             ></div>
           </div>
-          <span className="category-score">{selectedArea.airQualityScore}</span>
+          <span className="category-score">{getStatusText(selectedArea.airQualityScore)}</span>
         </div>
       </div>
 
