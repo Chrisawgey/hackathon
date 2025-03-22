@@ -31,8 +31,7 @@ const ScoreDisplay = ({ selectedArea, onRemoveArea }) => {
 
   // Function to get color based on score
   const getScoreColor = (score) => {
-    if (score >= 80) return '#4CAF50'; // Green
-    if (score >= 60) return '#FFC107'; // Yellow
+    if (score >= 60) return '#4CAF50'; // Green
     if (score >= 40) return '#FF9800'; // Orange
     return '#F44336'; // Red
   };
