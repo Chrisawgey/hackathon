@@ -48,16 +48,6 @@ const Navbar = ({ onRouteTypeChange, onReportIssue, onShowScenicViews, showingSc
         </div>
 
         <div className={`navbar-menu ${showMobileMenu ? 'active' : ''}`}>
-          <div className="route-selection">
-            <label>Route Type:</label>
-            <select onChange={(e) => onRouteTypeChange(e.target.value)}>
-              <option value="fastest">Fastest</option>
-              <option value="safest">Safest</option>
-              <option value="scenic">Most Scenic</option>
-              <option value="accessible">Most Accessible</option>
-            </select>
-          </div>
-
           <button 
             className={`scenic-views-btn ${showingScenicViews ? 'active' : ''}`} 
             onClick={onShowScenicViews}

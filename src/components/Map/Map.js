@@ -70,7 +70,19 @@ const WalkabilityMap = ({
   const [destinationMarker, setDestinationMarker] = useState(null);
   const [destinationAddress, setDestinationAddress] = useState('');
   const [isSettingDestination, setIsSettingDestination] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const mapRef = useRef(null);
+
+  // Check if we're on mobile device
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    
+    checkMobile(); // Check on initial load
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   // Update position when userLocation changes
   useEffect(() => {
@@ -128,6 +140,18 @@ const WalkabilityMap = ({
       console.error("Error geocoding address:", error);
       alert("Could not find that address. Please try another location.");
     }
+  };
+
+  // Create a custom score marker icon with improved mobile interactions
+  const createScoreMarkerIcon = (score) => {
+    const scoreColor = getScoreColor(score);
+    
+    return L.divIcon({
+      className: `score-marker ${isMobile ? 'score-marker-mobile' : ''}`,
+      html: `<div style="background-color: ${scoreColor};">${score}</div>`,
+      iconSize: [36, 36],
+      iconAnchor: [18, 18]
+    });
   };
 
   return (
@@ -206,24 +230,26 @@ const WalkabilityMap = ({
           <Marker 
             key={point.id} 
             position={point.position}
-            icon={L.divIcon({
-              className: 'score-marker',
-              html: `<div style="background-color: ${getScoreColor(point.score)};">${point.score}</div>`,
-              iconSize: [30, 30],
-              iconAnchor: [15, 15]
-            })}
+            icon={createScoreMarkerIcon(point.score)}
             eventHandlers={{
               click: () => {
                 onAreaSelect(point.id);
+                // On mobile, we don't want to show the popup to avoid confusing the user
+                if (isMobile && mapRef.current) {
+                  const map = mapRef.current;
+                  map._leaflet_id && map._leaflet.closePopup();
+                }
               }
             }}
           >
-            <Popup>
-              <div>
-                <h3>Walkability Score: {point.score}/100</h3>
-                <p>{point.description}</p>
-              </div>
-            </Popup>
+            {!isMobile && (
+              <Popup>
+                <div>
+                  <h3>Walkability Score: {point.score}/100</h3>
+                  <p>{point.description}</p>
+                </div>
+              </Popup>
+            )}
           </Marker>
         ))}
         
