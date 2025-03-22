@@ -4,6 +4,7 @@ import WalkabilityMap from './components/Map/Map';
 import Navbar from './components/Navigation/Navbar';
 import ScoreDisplay from './components/ScoreDisplay/ScoreDisplay';
 import ReportForm from './components/UserReports/ReportForm';
+import ScenicViews from './components/ScenicViews/ScenicViews';
 import { subscribeToAuthChanges } from './services/authService';
 import { submitWalkabilityReport } from './services/reportsService';
 import { getOptimizedRoute } from './services/routesService';
@@ -19,6 +20,7 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
   const [selectedRoute, setSelectedRoute] = useState(null);
+  const [showScenicViews, setShowScenicViews] = useState(false);
 
   // Subscribe to auth state changes
   useEffect(() => {
@@ -42,15 +44,17 @@ function App() {
         },
         (error) => {
           console.error("Error getting location:", error);
-          // Default to NYC if location access is denied
-          setUserLocation([40.7128, -74.0060]);
-          loadWalkabilityData(40.7128, -74.0060);
+          // Default to Kean University if location access is denied
+          const keanUniversityCoords = [40.6769, -74.2390]; // Kean University coordinates
+          setUserLocation(keanUniversityCoords);
+          loadWalkabilityData(keanUniversityCoords[0], keanUniversityCoords[1]);
         }
       );
     } else {
       // Geolocation not supported
-      setUserLocation([40.7128, -74.0060]);
-      loadWalkabilityData(40.7128, -74.0060);
+      const keanUniversityCoords = [40.6769, -74.2390]; // Kean University coordinates
+      setUserLocation(keanUniversityCoords);
+      loadWalkabilityData(keanUniversityCoords[0], keanUniversityCoords[1]);
     }
   }, []);
 
@@ -167,6 +171,8 @@ function App() {
           }
           setShowReportForm(true);
         }}
+        onShowScenicViews={() => setShowScenicViews(!showScenicViews)}
+        showingScenicViews={showScenicViews}
       />
       
       <div className="main-content">
@@ -189,7 +195,9 @@ function App() {
         </div>
         
         <div className="info-panel">
-          {selectedRoute ? (
+          {showScenicViews ? (
+            <ScenicViews />
+          ) : selectedRoute ? (
             <div className="route-info">
               <div className="route-info-header">
                 <h3>Route Information</h3>

@@ -104,6 +104,26 @@
     border-radius: 3px;
   }
   
+  .scenic-views-btn {
+    background-color: #28a745;
+    border: none;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-right: 20px;
+    font-weight: bold;
+    transition: background-color 0.2s;
+  }
+  
+  .scenic-views-btn:hover {
+    background-color: #218838;
+  }
+  
+  .scenic-views-btn.active {
+    background-color: #1e7e34;
+  }
+  
   /* Responsive design */
   @media (max-width: 768px) {
     .menu-toggle {
@@ -129,7 +149,7 @@
       transform: translateY(0);
     }
   
-    .route-selection, .report-btn, .auth-section {
+    .route-selection, .report-btn, .scenic-views-btn, .auth-section {
       margin: 10px 0;
       width: 100%;
     }

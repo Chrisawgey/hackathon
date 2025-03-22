@@ -1,0 +1,98 @@
+/* src/components/ScenicViews/ScenicViews.css */
+.scenic-views {
+    padding: 20px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .scenic-intro {
+    margin-bottom: 20px;
+    color: #666;
+    line-height: 1.6;
+  }
+  
+  .scenic-spots-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    margin-bottom: 30px;
+  }
+  
+  .scenic-spot {
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+  }
+  
+  .scenic-spot:hover {
+    transform: translateY(-5px);
+  }
+  
+  .scenic-spot-placeholder {
+    height: 180px;
+    background-color: #3a86ff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    font-size: 18px;
+  }
+  
+  .scenic-details {
+    padding: 15px;
+  }
+  
+  .scenic-details h3 {
+    margin: 0 0 10px 0;
+    color: #3a86ff;
+  }
+  
+  .scenic-details p {
+    margin: 0 0 15px 0;
+    color: #666;
+    line-height: 1.5;
+  }
+  
+  .scenic-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    color: #666;
+  }
+  
+  .scenic-tips {
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    border-left: 4px solid #3a86ff;
+  }
+  
+  .scenic-tips h3 {
+    margin-top: 0;
+    color: #333;
+  }
+  
+  .scenic-tips ul {
+    margin: 0;
+    padding-left: 20px;
+  }
+  
+  .scenic-tips li {
+    margin-bottom: 8px;
+    color: #666;
+  }
+  
+  .placeholder-text {
+    text-align: center;
+    padding: 20px;
+  }
+  
+  /* Responsive design */
+  @media (max-width: 768px) {
+    .scenic-spots-container {
+      grid-template-columns: 1fr;
+    }
+  }
