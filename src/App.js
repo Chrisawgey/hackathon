@@ -1,4 +1,4 @@
-// src/App.js
+// src/App.js - Updated to support analyzing any location
 import React, { useState, useEffect } from 'react';
 import WalkabilityMap from './components/Map/Map';
 import Navbar from './components/Navigation/Navbar';
@@ -77,29 +77,51 @@ function App() {
     }
   }, []);
 
-  // Function to load walkability data
-  const loadWalkabilityData = async (latitude, longitude) => {
+  // Function to load walkability data for any location
+  const loadWalkabilityData = async (latitude, longitude, shouldSelectArea = true) => {
     setLoading(true);
     try {
       // Get walkability score from the walkability service
       const scoreResult = await getWalkabilityScore(latitude, longitude);
       
       if (scoreResult.success) {
-        // Transform the score into the format expected by the map component
-        const scoreData = [{
-          id: scoreResult.score.id || 'current-location',
+        // Create a data object for the new location
+        const newScoreData = {
+          id: scoreResult.score.id || `location-${Date.now()}`,
           position: [scoreResult.score.location.latitude || latitude, 
                      scoreResult.score.location.longitude || longitude],
           score: scoreResult.score.overallScore,
           description: scoreResult.score.aiInsights,
+          name: `Location at ${latitude.toFixed(4)}, ${longitude.toFixed(4)}`,
           ...scoreResult.score
-        }];
+        };
         
-        setWalkabilityData(scoreData);
+        // Check if we already have this area in our data
+        const existingAreaIndex = walkabilityData.findIndex(
+          area => area.id === newScoreData.id
+        );
         
-        // If there's a score, select it to show details
-        if (scoreData.length > 0) {
-          setSelectedArea(scoreData[0]);
+        let updatedWalkabilityData;
+        
+        if (existingAreaIndex >= 0) {
+          // Update existing area
+          updatedWalkabilityData = [...walkabilityData];
+          updatedWalkabilityData[existingAreaIndex] = newScoreData;
+        } else {
+          // Add new area
+          updatedWalkabilityData = [...walkabilityData, newScoreData];
+        }
+        
+        setWalkabilityData(updatedWalkabilityData);
+        
+        // If shouldSelectArea is true, select this area to show its details
+        if (shouldSelectArea) {
+          setSelectedArea(newScoreData);
+          
+          // On mobile, show the info panel when a new area is selected
+          if (isMobile) {
+            setShowInfoPanel(true);
+          }
         }
       } else {
         console.error("Error getting walkability score:", scoreResult.error);
@@ -122,6 +144,23 @@ function App() {
         setShowInfoPanel(true);
       }
     }
+  };
+  
+  // Handle removing a selected area
+  const handleRemoveArea = (areaId) => {
+    // Remove from walkability data
+    setWalkabilityData(walkabilityData.filter(area => area.id !== areaId));
+    
+    // If this was the currently selected area, clear the selection
+    if (selectedArea && selectedArea.id === areaId) {
+      setSelectedArea(null);
+    }
+  };
+  
+  // Handle analyzing a new location
+  const handleAnalyzeLocation = (latitude, longitude) => {
+    // Load walkability data for the selected location
+    loadWalkabilityData(latitude, longitude);
   };
 
   // Handle route type change
@@ -238,6 +277,7 @@ function App() {
             userLocation={userLocation}
             selectedRoute={selectedRoute ? selectedRoute.points : null}
             onCalculateRoute={calculateRoute}
+            onRequestWalkabilityData={handleAnalyzeLocation}
           />
           
           {loading && (
@@ -325,6 +365,7 @@ function App() {
           ) : (
             <ScoreDisplay 
               selectedArea={selectedArea}
+              onRemoveArea={handleRemoveArea}
             />
           )}
         </div>

@@ -33,14 +33,22 @@ const Navbar = ({ onRouteTypeChange, onReportIssue, onShowScenicViews, showingSc
     await logOut();
   };
 
+  function themeChange() {
+    const themeChange = document.querySelectorAll('.theme');
+  
+    themeChange.forEach(element => {
+      element.classList.toggle('dark');
+    });
+  }
+
   return (
     <>
-      <nav className="navbar">
+      <nav className="navbar theme">
         <div className="navbar-brand">
           <span className="logo">🚶</span>
           <h1>WalkScore AI</h1>
         </div>
-
+        <button onClick={themeChange}>Change Theme</button>
         <div className="menu-toggle" onClick={() => setShowMobileMenu(!showMobileMenu)}>
           <span></span>
           <span></span>

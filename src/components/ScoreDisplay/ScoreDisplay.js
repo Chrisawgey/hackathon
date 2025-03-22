@@ -2,13 +2,14 @@
 import React from 'react';
 import './ScoreDisplay.css';
 
-const ScoreDisplay = ({ selectedArea }) => {
+const ScoreDisplay = ({ selectedArea, onRemoveArea }) => {
   // If no area is selected, show a default message
   if (!selectedArea) {
     return (
       <div className="score-display">
         <div className="score-display-empty">
-          <p>Select an area on the map to view detailed walkability scores</p>
+          <div className="empty-icon">🔍</div>
+          <p>Select an area on the map to view detailed walkability scores or use the "Analyze any location" option</p>
         </div>
       </div>
     );
@@ -33,16 +34,31 @@ const ScoreDisplay = ({ selectedArea }) => {
     return '#F44336'; // Red
   };
 
+  // Handle removing the current area
+  const handleRemove = () => {
+    if (onRemoveArea && selectedArea) {
+      onRemoveArea(selectedArea.id);
+    }
+  };
+
   return (
-    <div className="score-display">
+    <div className="score-display theme">
       <div className="score-header">
         <h2>Area Walkability Analysis</h2>
         <p className="location-name">{selectedArea.name || 'Selected Area'}</p>
+        
+        <button 
+          className="remove-area-btn" 
+          onClick={handleRemove}
+          title="Remove this area from the map"
+        >
+          Remove from Map
+        </button>
       </div>
 
       <div className="overall-score">
         <div 
-          className="score-circle" 
+          className="score-circle"
           style={{ 
             backgroundColor: getScoreColor(selectedArea.overallScore),
             color: selectedArea.overallScore >= 60 ? '#333' : 'white'
@@ -71,7 +87,7 @@ const ScoreDisplay = ({ selectedArea }) => {
               }}
             ></div>
           </div>
-          <span className="category-score">{selectedArea.sidewalkScore}</span>
+          <span className="category-score">{getStatusText(selectedArea.sidewalkScore)}</span>
         </div>
 
         <div className="category">
@@ -88,7 +104,7 @@ const ScoreDisplay = ({ selectedArea }) => {
               }}
             ></div>
           </div>
-          <span className="category-score">{selectedArea.crosswalkScore}</span>
+          <span className="category-score">{getStatusText(selectedArea.crosswalkScore)}</span>
         </div>
 
         <div className="category">
@@ -105,7 +121,7 @@ const ScoreDisplay = ({ selectedArea }) => {
               }}
             ></div>
           </div>
-          <span className="category-score">{selectedArea.lightingScore}</span>
+          <span className="category-score">{getStatusText(selectedArea.lightingScore)}</span>
         </div>
 
         <div className="category">
@@ -122,7 +138,7 @@ const ScoreDisplay = ({ selectedArea }) => {
               }}
             ></div>
           </div>
-          <span className="category-score">{selectedArea.transitScore}</span>
+          <span className="category-score">{getStatusText(selectedArea.transitScore)}</span>
         </div>
 
         <div className="category">
@@ -139,7 +155,7 @@ const ScoreDisplay = ({ selectedArea }) => {
               }}
             ></div>
           </div>
-          <span className="category-score">{selectedArea.airQualityScore}</span>
+          <span className="category-score">{getStatusText(selectedArea.airQualityScore)}</span>
         </div>
       </div>
 
