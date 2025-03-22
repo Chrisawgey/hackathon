@@ -18,6 +18,12 @@
   animation: markerAppear 0.5s ease-out;
 }
 
+.score-marker-mobile div {
+  width: 44px !important;
+  height: 44px !important;
+  font-size: 16px !important;
+}
+
 @keyframes markerAppear {
   from {
     opacity: 0;
@@ -219,27 +225,52 @@
 /* Responsive design */
 @media (max-width: 768px) {
   .destination-controls {
-    width: calc(100% - 40px);
+    width: calc(100% - 20px);
     max-width: none;
+    top: 10px;
+    left: 10px;
+    padding: 10px;
+  }
+  
+  .destination-search input {
+    padding: 10px;
+  }
+  
+  .destination-search button {
+    padding: 10px;
   }
   
   .destination-buttons {
     flex-direction: column;
+    gap: 8px;
+  }
+  
+  .set-destination-btn, .clear-destination-btn {
+    padding: 8px;
+    font-size: 13px;
   }
   
   .walkability-legend {
-    bottom: 20px;
+    bottom: 15px;
     right: 10px;
     padding: 10px;
-  }
-  
-  .legend-item {
     font-size: 12px;
   }
   
+  .legend-item {
+    font-size: 11px;
+  }
+  
   .legend-color {
-    width: 15px;
-    height: 15px;
+    width: 14px;
+    height: 14px;
     margin-right: 6px;
+  }
+  
+  /* Make score markers easier to tap on mobile */
+  .score-marker div {
+    width: 40px;
+    height: 40px;
+    font-size: 15px;
   }
 }
