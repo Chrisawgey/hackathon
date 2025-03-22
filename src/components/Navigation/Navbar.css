@@ -81,6 +81,9 @@
 .route-selection select:focus {
   outline: none;
 }
+.theme-toggle-btn {
+  margin-left: auto;
+}
 
 .report-btn {
   background-color: #ff6b6b;
