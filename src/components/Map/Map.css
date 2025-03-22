@@ -316,24 +316,6 @@
     height: 14px;
     margin-right: 6px;
   }
-<<<<<<< Updated upstream
-  
-  /* Make score markers easier to tap on mobile */
-  .score-marker div {
-    width: 40px;
-    height: 40px;
-    font-size: 15px;
-  }
-  
-  .analysis-instructions {
-    padding: 10px 15px;
-  }
-  
-  .analysis-instructions p {
-    font-size: 14px;
-  }
-}
-=======
 }
 
 .dark {
@@ -383,4 +365,3 @@ nav.dark > select > * {
   background-color: #353638!important;
   color: #FAF9F6!important;
 }
->>>>>>> Stashed changes
