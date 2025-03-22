@@ -1,3 +1,4 @@
+// src/index.js - Updated to include ThemeProvider
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';

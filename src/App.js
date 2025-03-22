@@ -1,15 +1,17 @@
-// src/App.js - Updated to support analyzing any location
+// src/App.js - Updated with RouteOptions moved from Navbar to Map
 import React, { useState, useEffect } from 'react';
 import WalkabilityMap from './components/Map/Map';
 import Navbar from './components/Navigation/Navbar';
 import ScoreDisplay from './components/ScoreDisplay/ScoreDisplay';
 import ReportForm from './components/UserReports/ReportForm';
 import ScenicViews from './components/ScenicViews/ScenicViews';
+import { ThemeProvider } from './context/ThemeContext';
 import { subscribeToAuthChanges } from './services/authService';
-import { submitWalkabilityReport } from './services/mockReportsService'; // Changed from reportsService to mockReportsService
+import { submitWalkabilityReport } from './services/mockReportsService';
 import { getOptimizedRoute } from './services/routesService';
 import { getWalkabilityScore } from './services/walkabilityService';
 import './App.css';
+import './Theme.css';
 
 function App() {
   const [userLocation, setUserLocation] = useState(null);
@@ -27,9 +29,10 @@ function App() {
   // Check if we're on mobile and update state
   useEffect(() => {
     const checkMobile = () => {
-      setIsMobile(window.innerWidth <= 768);
+      const mobile = window.innerWidth <= 768;
+      setIsMobile(mobile);
       // On mobile, default to having the panel hidden
-      if (window.innerWidth <= 768) {
+      if (mobile) {
         setShowInfoPanel(false);
       } else {
         setShowInfoPanel(true);
@@ -175,6 +178,11 @@ function App() {
 
   // Function to calculate a route
   const calculateRoute = async (start, end, routePreference = routeType) => {
+    if (!start || !end) {
+      setSelectedRoute(null);
+      return;
+    }
+    
     setLoading(true);
     try {
       const result = await getOptimizedRoute(
@@ -248,139 +256,141 @@ function App() {
   };
 
   return (
-    <div className="app">
-      <Navbar 
-        onRouteTypeChange={handleRouteTypeChange}
-        onReportIssue={() => {
-          if (!user) {
-            alert("Please log in to report an issue");
-            return;
-          }
-          setShowReportForm(true);
-        }}
-        onShowScenicViews={() => {
-          setShowScenicViews(!showScenicViews);
-          // On mobile, always show the panel when scenic views is activated
-          if (isMobile && !showScenicViews) {
-            setShowInfoPanel(true);
-          }
-        }}
-        showingScenicViews={showScenicViews}
-      />
-      
-      <div className="main-content">
-        <div className={`map-section ${isMobile && showInfoPanel ? 'map-section-collapsed' : ''}`}>
-          <WalkabilityMap 
-            walkabilityData={walkabilityData}
-            onAreaSelect={handleAreaSelect}
-            selectedRouteType={routeType}
-            userLocation={userLocation}
-            selectedRoute={selectedRoute ? selectedRoute.points : null}
-            onCalculateRoute={calculateRoute}
-            onRequestWalkabilityData={handleAnalyzeLocation}
-          />
+    <ThemeProvider>
+      <div className="app">
+        <Navbar 
+          onReportIssue={() => {
+            if (!user) {
+              alert("Please log in to report an issue");
+              return;
+            }
+            setShowReportForm(true);
+          }}
+          onShowScenicViews={() => {
+            setShowScenicViews(!showScenicViews);
+            // On mobile, always show the panel when scenic views is activated
+            if (isMobile && !showScenicViews) {
+              setShowInfoPanel(true);
+            }
+          }}
+          showingScenicViews={showScenicViews}
+        />
+        
+        <div className="main-content">
+          <div className={`map-section ${isMobile && showInfoPanel ? 'map-section-collapsed' : ''}`}>
+            <WalkabilityMap 
+              walkabilityData={walkabilityData}
+              onAreaSelect={handleAreaSelect}
+              selectedRouteType={routeType}
+              userLocation={userLocation}
+              selectedRoute={selectedRoute ? selectedRoute.points : null}
+              onCalculateRoute={calculateRoute}
+              onRequestWalkabilityData={handleAnalyzeLocation}
+              onRouteTypeChange={handleRouteTypeChange}
+            />
+            
+            {loading && (
+              <div className="loading-overlay">
+                <div className="spinner"></div>
+                <p>Loading walkability data...</p>
+              </div>
+            )}
+          </div>
           
-          {loading && (
-            <div className="loading-overlay">
-              <div className="spinner"></div>
-              <p>Loading walkability data...</p>
-            </div>
-          )}
-        </div>
-        
-        {/* Mobile toggle button for info panel */}
-        {isMobile && selectedArea && !showInfoPanel && (
-          <button 
-            className="mobile-panel-toggle show-panel" 
-            onClick={toggleInfoPanel}
-            aria-label="Show details"
-          >
-            <span>↑ View Details ↑</span>
-          </button>
-        )}
-        
-        <div className={`info-panel ${!showInfoPanel ? 'info-panel-hidden' : ''}`}>
-          {isMobile && (
+          {/* Mobile toggle button for info panel */}
+          {isMobile && selectedArea && !showInfoPanel && (
             <button 
-              className="mobile-panel-close"
+              className="mobile-panel-toggle show-panel" 
               onClick={toggleInfoPanel}
-              aria-label="Close panel"
+              aria-label="Show details"
             >
-              ×
+              <span>↑ View Details ↑</span>
             </button>
           )}
           
-          {showScenicViews ? (
-            <ScenicViews onSelectDestination={handleScenicSpotSelect} />
-          ) : selectedRoute ? (
-            <div className="route-info">
-              <div className="route-info-header">
-                <h3>Route Information</h3>
-                <button 
-                  className="close-btn" 
-                  onClick={() => setSelectedRoute(null)}
-                >×</button>
+          <div className={`info-panel ${!showInfoPanel ? 'info-panel-hidden' : ''}`}>
+            {isMobile && (
+              <button 
+                className="mobile-panel-close"
+                onClick={toggleInfoPanel}
+                aria-label="Close panel"
+              >
+                ×
+              </button>
+            )}
+            
+            {showScenicViews ? (
+              <ScenicViews onSelectDestination={handleScenicSpotSelect} />
+            ) : selectedRoute ? (
+              <div className="route-info">
+                <div className="route-info-header">
+                  <h3>Route Information</h3>
+                  <button 
+                    className="close-btn" 
+                    onClick={() => setSelectedRoute(null)}
+                  >×</button>
+                </div>
+                
+                <div className="route-metrics">
+                  <div className="metric">
+                    <div className="metric-value">{selectedRoute.distance}</div>
+                    <div className="metric-label">Distance</div>
+                  </div>
+                  <div className="metric">
+                    <div className="metric-value">{selectedRoute.duration}</div>
+                    <div className="metric-label">Walking Time</div>
+                  </div>
+                  <div className="metric">
+                    <div className="metric-value">{selectedRoute.walkabilityScore}</div>
+                    <div className="metric-label">Walkability</div>
+                  </div>
+                </div>
+                
+                <div className="route-preferences">
+                  <div className={`preference-option ${selectedRoute.routeType === 'fastest' ? 'active' : ''}`}
+                    onClick={() => handleRouteTypeChange('fastest')}>
+                    Fastest
+                  </div>
+                  <div className={`preference-option ${selectedRoute.routeType === 'safest' ? 'active' : ''}`}
+                    onClick={() => handleRouteTypeChange('safest')}>
+                    Safest
+                  </div>
+                  <div className={`preference-option ${selectedRoute.routeType === 'scenic' ? 'active' : ''}`}
+                    onClick={() => handleRouteTypeChange('scenic')}>
+                    Scenic
+                  </div>
+                  <div className={`preference-option ${selectedRoute.routeType === 'accessible' ? 'active' : ''}`}
+                    onClick={() => handleRouteTypeChange('accessible')}>
+                    Accessible
+                  </div>
+                </div>
+                
+                {selectedRoute.warnings && selectedRoute.warnings.length > 0 && (
+                  <div className="route-warning">
+                    <strong>Warning:</strong> {selectedRoute.warnings[0]}
+                  </div>
+                )}
               </div>
-              
-              <div className="route-metrics">
-                <div className="metric">
-                  <div className="metric-value">{selectedRoute.distance}</div>
-                  <div className="metric-label">Distance</div>
-                </div>
-                <div className="metric">
-                  <div className="metric-value">{selectedRoute.duration}</div>
-                  <div className="metric-label">Walking Time</div>
-                </div>
-                <div className="metric">
-                  <div className="metric-value">{selectedRoute.walkabilityScore}</div>
-                  <div className="metric-label">Walkability</div>
-                </div>
-              </div>
-              
-              <div className="route-preferences">
-                <div className={`preference-option ${selectedRoute.routeType === 'fastest' ? 'active' : ''}`}
-                  onClick={() => handleRouteTypeChange('fastest')}>
-                  Fastest
-                </div>
-                <div className={`preference-option ${selectedRoute.routeType === 'safest' ? 'active' : ''}`}
-                  onClick={() => handleRouteTypeChange('safest')}>
-                  Safest
-                </div>
-                <div className={`preference-option ${selectedRoute.routeType === 'scenic' ? 'active' : ''}`}
-                  onClick={() => handleRouteTypeChange('scenic')}>
-                  Scenic
-                </div>
-                <div className={`preference-option ${selectedRoute.routeType === 'accessible' ? 'active' : ''}`}
-                  onClick={() => handleRouteTypeChange('accessible')}>
-                  Accessible
-                </div>
-              </div>
-              
-              {selectedRoute.warnings && selectedRoute.warnings.length > 0 && (
-                <div className="route-warning">
-                  <strong>Warning:</strong> {selectedRoute.warnings[0]}
-                </div>
-              )}
-            </div>
-          ) : (
-            <ScoreDisplay 
-              selectedArea={selectedArea}
-              onRemoveArea={handleRemoveArea}
+            ) : (
+              <ScoreDisplay 
+                selectedArea={selectedArea}
+                onRemoveArea={handleRemoveArea}
+              />
+            )}
+          </div>
+        </div>
+        
+        {showReportForm && (
+          <div className="modal-backdrop">
+            <ReportForm 
+              onSubmit={handleReportSubmit}
+              onClose={() => setShowReportForm(false)}
+              currentLocation={userLocation}
             />
-          )}
-        </div>
+          </div>
+        )}
       </div>
-      
-      {showReportForm && (
-        <div className="modal-backdrop">
-          <ReportForm 
-            onSubmit={handleReportSubmit}
-            onClose={() => setShowReportForm(false)}
-            currentLocation={userLocation}
-          />
-        </div>
-      )}
-    </div>
+    </ThemeProvider>
   );
 }
 

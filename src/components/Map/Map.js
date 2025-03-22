@@ -1,8 +1,10 @@
-// src/components/Map/Map.js
-import React, { useState, useEffect, useRef } from 'react';
+// src/components/Map/Map.js - Updated with RouteOptions
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap, useMapEvents } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
+import { ThemeContext } from '../../context/ThemeContext';
+import RouteOptions from './RouteOptions';
 import './Map.css';
 
 // Fix for default marker icon in leaflet
@@ -69,7 +71,8 @@ const WalkabilityMap = ({
   userLocation,
   selectedRoute,
   onCalculateRoute,
-  onRequestWalkabilityData
+  onRequestWalkabilityData,
+  onRouteTypeChange
 }) => {
   // Default coordinates (can be set to user's location later)
   const [position, setPosition] = useState([40.7128, -74.0060]); // NYC default
@@ -80,7 +83,8 @@ const WalkabilityMap = ({
   const [analysisMarker, setAnalysisMarker] = useState(null);
   const [isMobile, setIsMobile] = useState(false);
   const mapRef = useRef(null);
-
+  const { theme } = useContext(ThemeContext);
+  
   // Check if we're on mobile device
   useEffect(() => {
     const checkMobile = () => {
@@ -191,15 +195,47 @@ const WalkabilityMap = ({
     });
   };
 
+  const getRouteColor = (routeType) => {
+    switch (routeType) {
+      case 'safest':
+        return '#4CAF50'; // Green
+      case 'scenic':
+        return '#3F51B5'; // Indigo
+      case 'accessible':
+        return '#9C27B0'; // Purple
+      default:
+        return '#3a86ff'; // Blue (fastest)
+    }
+  };
+
+  // Get the appropriate tile layer based on theme
+  const getTileLayer = () => {
+    if (theme === 'dark') {
+      return 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
+    }
+    return 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+  };
+
+  const getTileAttribution = () => {
+    if (theme === 'dark') {
+      return '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>';
+    }
+    return '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
+  };
+
+  // Show route options only when a route is active or we're setting a destination
+  const showRouteOptions = selectedRoute || isSettingDestination || destinationMarker;
+
   return (
-    <div className="map-container theme">
-      <div className="destination-controls theme">
+    <div className={`map-container ${theme}`}>
+      <div className={`destination-controls ${theme}`}>
         <form onSubmit={handleAddressSearch} className="destination-search">
           <input
             type="text"
             placeholder="Enter destination address..."
             value={destinationAddress}
             onChange={(e) => setDestinationAddress(e.target.value)}
+            aria-label="Destination address"
           />
           <button type="submit">Find Route</button>
         </form>
@@ -213,7 +249,7 @@ const WalkabilityMap = ({
               }
             }}
           >
-            {isSettingDestination ? 'Click on map to set destination' : 'Set destination on map'}
+            {isSettingDestination ? 'Click on map' : 'Set destination'}
           </button>
           
           <button 
@@ -225,22 +261,45 @@ const WalkabilityMap = ({
               }
             }}
           >
-            {isAnalysisMode ? 'Click on map to analyze' : 'Analyze any location'}
+            {isAnalysisMode ? 'Click to analyze' : 'Analyze location'}
           </button>
           
-
+          {(destinationMarker || selectedRoute) && (
+            <button 
+              className="clear-destination-btn"
+              onClick={() => {
+                setDestinationMarker(null);
+                setDestinationAddress('');
+                if (onCalculateRoute) {
+                  // Clear the route by setting it to null
+                  onCalculateRoute(null, null);
+                }
+              }}
+            >
+              Clear route
+            </button>
+          )}
         </div>
       </div>
+      
+      {/* Route options component */}
+      {showRouteOptions && (
+        <RouteOptions 
+          selectedRouteType={selectedRouteType} 
+          onRouteTypeChange={onRouteTypeChange} 
+        />
+      )}
       
       <MapContainer 
         center={position} 
         zoom={15} 
         style={{ height: "100%", width: "100%" }} 
         ref={mapRef}
+        zoomControl={!isMobile} // Hide default zoom controls on mobile
       >
         <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          attribution={getTileAttribution()}
+          url={getTileLayer()}
         />
         
         {/* Add the map click handlers */}
@@ -256,9 +315,23 @@ const WalkabilityMap = ({
         
         {/* User's current location */}
         {userLocation && (
-          <Marker position={userLocation} icon={userIcon}>
+          <Marker 
+            position={userLocation} 
+            icon={userIcon}
+            eventHandlers={{
+              click: () => {
+                if (mapRef.current) {
+                  const leafletMap = mapRef.current.getContainer()._leaflet_id ? 
+                    mapRef.current : mapRef.current._leafletMap;
+                  if (leafletMap) {
+                    leafletMap.closePopup();
+                  }
+                }
+              }
+            }}
+          >
             <Popup>
-              You are here
+              <div>You are here</div>
             </Popup>
           </Marker>
         )}
@@ -267,7 +340,7 @@ const WalkabilityMap = ({
         {destinationMarker && (
           <Marker position={destinationMarker}>
             <Popup>
-              Destination
+              <div>Destination</div>
             </Popup>
           </Marker>
         )}
@@ -276,7 +349,7 @@ const WalkabilityMap = ({
         {analysisMarker && (
           <Marker position={analysisMarker} icon={analysisIcon}>
             <Popup>
-              Analyzing walkability here
+              <div>Analyzing walkability here</div>
             </Popup>
           </Marker>
         )}
@@ -292,8 +365,11 @@ const WalkabilityMap = ({
                 onAreaSelect(point.id);
                 // On mobile, we don't want to show the popup to avoid confusing the user
                 if (isMobile && mapRef.current) {
-                  const map = mapRef.current;
-                  map._leaflet_id && map._leaflet.closePopup();
+                  const leafletMap = mapRef.current.getContainer()._leaflet_id ? 
+                    mapRef.current : mapRef.current._leafletMap;
+                  if (leafletMap) {
+                    leafletMap.closePopup();
+                  }
                 }
               }
             }}
@@ -313,17 +389,14 @@ const WalkabilityMap = ({
         {selectedRoute && (
           <Polyline 
             positions={selectedRoute} 
-            color={selectedRouteType === 'safest' ? '#4CAF50' : 
-                  selectedRouteType === 'scenic' ? '#3F51B5' : 
-                  selectedRouteType === 'accessible' ? '#9C27B0' : 
-                  '#3388ff'} 
+            color={getRouteColor(selectedRouteType)} 
             weight={6} 
             opacity={0.7} 
           />
         )}
       </MapContainer>
       
-      <div className="walkability-legend">
+      <div className={`walkability-legend ${theme}`}>
         <h4>Walkability Score</h4>
         <div className="legend-item">
           <div className="legend-color" style={{ backgroundColor: '#4CAF50' }}></div>
@@ -344,6 +417,42 @@ const WalkabilityMap = ({
           <div className="analysis-instructions">
             <p>Click anywhere on the map to analyze walkability</p>
           </div>
+        </div>
+      )}
+
+      {/* Mobile-optimized zoom controls at bottom-right */}
+      {isMobile && (
+        <div className="mobile-zoom-controls">
+          <button 
+            className="zoom-control zoom-in"
+            onClick={() => {
+              if (mapRef.current) {
+                const leafletMap = mapRef.current.getContainer()._leaflet_id ? 
+                  mapRef.current : mapRef.current._leafletMap;
+                if (leafletMap) {
+                  leafletMap.zoomIn();
+                }
+              }
+            }}
+            aria-label="Zoom in"
+          >
+            +
+          </button>
+          <button 
+            className="zoom-control zoom-out"
+            onClick={() => {
+              if (mapRef.current) {
+                const leafletMap = mapRef.current.getContainer()._leaflet_id ? 
+                  mapRef.current : mapRef.current._leafletMap;
+                if (leafletMap) {
+                  leafletMap.zoomOut();
+                }
+              }
+            }}
+            aria-label="Zoom out"
+          >
+            -
+          </button>
         </div>
       )}
     </div>

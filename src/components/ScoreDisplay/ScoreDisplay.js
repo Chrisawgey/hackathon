@@ -1,12 +1,15 @@
-// src/components/ScoreDisplay/ScoreDisplay.js
-import React from 'react';
+// src/components/ScoreDisplay/ScoreDisplay.js - Updated for dark mode
+import React, { useContext } from 'react';
+import { ThemeContext } from '../../context/ThemeContext';
 import './ScoreDisplay.css';
 
 const ScoreDisplay = ({ selectedArea, onRemoveArea }) => {
+  const { theme } = useContext(ThemeContext);
+
   // If no area is selected, show a default message
   if (!selectedArea) {
     return (
-      <div className="score-display">
+      <div className={`score-display ${theme}`}>
         <div className="score-display-empty">
           <div className="empty-icon">🔍</div>
           <p>Select an area on the map to view detailed walkability scores or use the "Analyze any location" option</p>
@@ -42,7 +45,7 @@ const ScoreDisplay = ({ selectedArea, onRemoveArea }) => {
   };
 
   return (
-    <div className="score-display theme">
+    <div className={`score-display ${theme}`}>
       <div className="score-header">
         <h2>Area Walkability Analysis</h2>
         <p className="location-name">{selectedArea.name || 'Selected Area'}</p>
@@ -161,23 +164,36 @@ const ScoreDisplay = ({ selectedArea, onRemoveArea }) => {
 
       <div className="ai-insights">
         <h3>AI Insights</h3>
-        <p>{selectedArea.aiInsights || "Our AI has analyzed this area and found it to be generally safe for pedestrians, with adequate sidewalk coverage. Consider using caution at night due to limited street lighting in some sections."}</p>
+        <div className="insight-content">
+          <p>{selectedArea.aiInsights || "Our AI has analyzed this area and found it to be generally safe for pedestrians, with adequate sidewalk coverage. Consider using caution at night due to limited street lighting in some sections."}</p>
+        </div>
       </div>
 
       <div className="user-reports">
         <h3>Recent User Reports</h3>
         {selectedArea.userReports && selectedArea.userReports.length > 0 ? (
-          <ul>
+          <ul className="reports-list">
             {selectedArea.userReports.map((report, index) => (
-              <li key={index}>
-                <span className="report-type">{report.type}</span>
-                <p>{report.description}</p>
+              <li key={index} className="report-item">
+                <div className="report-header">
+                  <span className="report-type" style={{
+                    backgroundColor: report.type.includes('light') ? '#FFC107' :
+                                     report.type.includes('sidewalk') ? '#4CAF50' :
+                                     report.type.includes('cross') ? '#3F51B5' : '#FF5722'
+                  }}>
+                    {report.type.replace('_', ' ')}
+                  </span>
+                  <span className="report-severity">Severity: {report.severity}</span>
+                </div>
+                <p className="report-description">{report.description}</p>
                 <span className="report-date">{report.date}</span>
               </li>
             ))}
           </ul>
         ) : (
-          <p>No recent reports for this area</p>
+          <div className="no-reports">
+            <p>No recent reports for this area</p>
+          </div>
         )}
       </div>
     </div>
