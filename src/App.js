@@ -4,8 +4,10 @@ import WalkabilityMap from './components/Map/Map';
 import Navbar from './components/Navigation/Navbar';
 import ScoreDisplay from './components/ScoreDisplay/ScoreDisplay';
 import ReportForm from './components/UserReports/ReportForm';
-import { getWalkabilityData, getAreaById, submitReport, getRouteRecommendation } from './services/mapService';
-import { calculateWalkabilityScore, getOptimizedRoute } from './services/aiService';
+import { subscribeToAuthChanges } from './services/authService';
+import { submitWalkabilityReport } from './services/reportsService';
+import { getOptimizedRoute } from './services/routesService';
+import { getWalkabilityScore } from './services/walkabilityService';
 import './App.css';
 
 function App() {
@@ -15,6 +17,17 @@ function App() {
   const [routeType, setRouteType] = useState('fastest');
   const [walkabilityData, setWalkabilityData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(null);
+  const [selectedRoute, setSelectedRoute] = useState(null);
+
+  // Subscribe to auth state changes
+  useEffect(() => {
+    const unsubscribe = subscribeToAuthChanges((currentUser) => {
+      setUser(currentUser);
+    });
+    
+    return () => unsubscribe();
+  }, []);
 
   // Get user's location and load initial data
   useEffect(() => {
@@ -45,8 +58,29 @@ function App() {
   const loadWalkabilityData = async (latitude, longitude) => {
     setLoading(true);
     try {
-      const data = await getWalkabilityData(latitude, longitude);
-      setWalkabilityData(data);
+      // Get walkability score from the walkability service
+      const scoreResult = await getWalkabilityScore(latitude, longitude);
+      
+      if (scoreResult.success) {
+        // Transform the score into the format expected by the map component
+        const scoreData = [{
+          id: scoreResult.score.id || 'current-location',
+          position: [scoreResult.score.location.latitude || latitude, 
+                     scoreResult.score.location.longitude || longitude],
+          score: scoreResult.score.overallScore,
+          description: scoreResult.score.aiInsights,
+          ...scoreResult.score
+        }];
+        
+        setWalkabilityData(scoreData);
+        
+        // If there's a score, select it to show details
+        if (scoreData.length > 0) {
+          setSelectedArea(scoreData[0]);
+        }
+      } else {
+        console.error("Error getting walkability score:", scoreResult.error);
+      }
     } catch (error) {
       console.error("Error loading walkability data:", error);
     } finally {
@@ -56,25 +90,55 @@ function App() {
 
   // Handle selecting an area on the map
   const handleAreaSelect = async (areaId) => {
-    try {
-      const areaData = await getAreaById(areaId);
-      setSelectedArea(areaData);
-    } catch (error) {
-      console.error("Error fetching area details:", error);
+    // Find the area in the walkability data
+    const area = walkabilityData.find(item => item.id === areaId);
+    if (area) {
+      setSelectedArea(area);
     }
   };
 
   // Handle route type change
-  const handleRouteTypeChange = (type) => {
+  const handleRouteTypeChange = async (type) => {
     setRouteType(type);
-    // In a real app, this would trigger new route calculations
-    console.log(`Route type changed to: ${type}`);
+    
+    // If we have a selected route, recalculate with the new preference
+    if (selectedRoute && selectedRoute.start && selectedRoute.end) {
+      calculateRoute(selectedRoute.start, selectedRoute.end, type);
+    }
+  };
+
+  // Function to calculate a route
+  const calculateRoute = async (start, end, routePreference = routeType) => {
+    setLoading(true);
+    try {
+      const result = await getOptimizedRoute(
+        start[0], start[1], 
+        end[0], end[1], 
+        routePreference
+      );
+      
+      if (result.success) {
+        setSelectedRoute({
+          start,
+          end,
+          preference: routePreference,
+          ...result.route
+        });
+      } else {
+        console.error("Error calculating route:", result.error);
+        alert("Could not calculate route. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error calculating route:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Handle report submission
   const handleReportSubmit = async (reportData) => {
     try {
-      const response = await submitReport(reportData);
+      const response = await submitWalkabilityReport(reportData);
       if (response.success) {
         alert("Thank you for your report! It will help improve walkability in your area.");
         setShowReportForm(false);
@@ -96,7 +160,13 @@ function App() {
     <div className="app">
       <Navbar 
         onRouteTypeChange={handleRouteTypeChange}
-        onReportIssue={() => setShowReportForm(true)}
+        onReportIssue={() => {
+          if (!user) {
+            alert("Please log in to report an issue");
+            return;
+          }
+          setShowReportForm(true);
+        }}
       />
       
       <div className="main-content">
@@ -106,6 +176,8 @@ function App() {
             onAreaSelect={handleAreaSelect}
             selectedRouteType={routeType}
             userLocation={userLocation}
+            selectedRoute={selectedRoute ? selectedRoute.points : null}
+            onCalculateRoute={calculateRoute}
           />
           
           {loading && (
@@ -117,9 +189,61 @@ function App() {
         </div>
         
         <div className="info-panel">
-          <ScoreDisplay 
-            selectedArea={selectedArea}
-          />
+          {selectedRoute ? (
+            <div className="route-info">
+              <div className="route-info-header">
+                <h3>Route Information</h3>
+                <button 
+                  className="close-btn" 
+                  onClick={() => setSelectedRoute(null)}
+                >×</button>
+              </div>
+              
+              <div className="route-metrics">
+                <div className="metric">
+                  <div className="metric-value">{selectedRoute.distance}</div>
+                  <div className="metric-label">Distance</div>
+                </div>
+                <div className="metric">
+                  <div className="metric-value">{selectedRoute.duration}</div>
+                  <div className="metric-label">Walking Time</div>
+                </div>
+                <div className="metric">
+                  <div className="metric-value">{selectedRoute.walkabilityScore}</div>
+                  <div className="metric-label">Walkability</div>
+                </div>
+              </div>
+              
+              <div className="route-preferences">
+                <div className={`preference-option ${selectedRoute.routeType === 'fastest' ? 'active' : ''}`}
+                  onClick={() => handleRouteTypeChange('fastest')}>
+                  Fastest
+                </div>
+                <div className={`preference-option ${selectedRoute.routeType === 'safest' ? 'active' : ''}`}
+                  onClick={() => handleRouteTypeChange('safest')}>
+                  Safest
+                </div>
+                <div className={`preference-option ${selectedRoute.routeType === 'scenic' ? 'active' : ''}`}
+                  onClick={() => handleRouteTypeChange('scenic')}>
+                  Scenic
+                </div>
+                <div className={`preference-option ${selectedRoute.routeType === 'accessible' ? 'active' : ''}`}
+                  onClick={() => handleRouteTypeChange('accessible')}>
+                  Accessible
+                </div>
+              </div>
+              
+              {selectedRoute.warnings && selectedRoute.warnings.length > 0 && (
+                <div className="route-warning">
+                  <strong>Warning:</strong> {selectedRoute.warnings[0]}
+                </div>
+              )}
+            </div>
+          ) : (
+            <ScoreDisplay 
+              selectedArea={selectedArea}
+            />
+          )}
         </div>
       </div>
       

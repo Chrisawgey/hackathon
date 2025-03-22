@@ -1,5 +1,5 @@
 // src/components/Map/Map.js
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
@@ -13,6 +13,17 @@ L.Icon.Default.mergeOptions({
   shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
 });
 
+// Custom marker icons
+const userIcon = new L.Icon({
+  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
+  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41]
+});
+
 // This component will handle map position updates
 function SetViewOnChange({ coords }) {
   const map = useMap();
@@ -20,39 +31,27 @@ function SetViewOnChange({ coords }) {
   return null;
 }
 
-const WalkabilityMap = () => {
+const WalkabilityMap = ({ 
+  walkabilityData, 
+  onAreaSelect, 
+  selectedRouteType, 
+  userLocation,
+  selectedRoute,
+  onCalculateRoute 
+}) => {
   // Default coordinates (can be set to user's location later)
   const [position, setPosition] = useState([40.7128, -74.0060]); // NYC default
-  const [walkabilityData, setWalkabilityData] = useState([]);
-  const [selectedRoute, setSelectedRoute] = useState(null);
+  const [destinationMarker, setDestinationMarker] = useState(null);
+  const [destinationAddress, setDestinationAddress] = useState('');
+  const [isSettingDestination, setIsSettingDestination] = useState(false);
+  const mapRef = useRef(null);
 
-  // Detect user's location on component mount
+  // Update position when userLocation changes
   useEffect(() => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setPosition([position.coords.latitude, position.coords.longitude]);
-        },
-        (error) => {
-          console.error("Error getting location:", error);
-        }
-      );
+    if (userLocation) {
+      setPosition(userLocation);
     }
-  }, []);
-
-  // Mock walkability data for demonstration
-  useEffect(() => {
-    // This would come from our AI model and Firebase in the real app
-    const mockWalkabilityData = [
-      { id: 1, position: [40.7135, -74.0070], score: 85, description: "Great walkability, wide sidewalks" },
-      { id: 2, position: [40.7140, -74.0050], score: 45, description: "Poor crosswalks, limited accessibility" },
-      { id: 3, position: [40.7120, -74.0040], score: 68, description: "Good sidewalks, some obstructions" },
-      { id: 4, position: [40.7115, -74.0080], score: 92, description: "Excellent pedestrian area, well lit" },
-      { id: 5, position: [40.7150, -74.0070], score: 32, description: "Construction blocking sidewalks" }
-    ];
-    
-    setWalkabilityData(mockWalkabilityData);
-  }, []);
+  }, [userLocation]);
 
   // Get color based on walkability score
   const getScoreColor = (score) => {
@@ -62,9 +61,95 @@ const WalkabilityMap = () => {
     return '#F44336'; // Red
   };
 
+  // Handle map click for setting destination
+  const handleMapClick = (e) => {
+    if (isSettingDestination) {
+      const { lat, lng } = e.latlng;
+      setDestinationMarker([lat, lng]);
+      
+      // Calculate route if we have both origin and destination
+      if (userLocation) {
+        onCalculateRoute(userLocation, [lat, lng]);
+      }
+      
+      setIsSettingDestination(false);
+    }
+  };
+
+  // Handle setting destination from address search
+  const handleAddressSearch = async (e) => {
+    e.preventDefault();
+    
+    if (!destinationAddress.trim()) return;
+    
+    try {
+      // In a real app, this would use a geocoding service like Google Maps or Mapbox
+      // For the MVP, we'll simulate a geocoding response
+      
+      // Random location within ~1km of the user's location
+      const jitterLat = (Math.random() - 0.5) * 0.02;
+      const jitterLng = (Math.random() - 0.5) * 0.02;
+      
+      const geocodedLocation = [
+        position[0] + jitterLat,
+        position[1] + jitterLng
+      ];
+      
+      setDestinationMarker(geocodedLocation);
+      
+      // Calculate route if we have both origin and destination
+      if (userLocation) {
+        onCalculateRoute(userLocation, geocodedLocation);
+      }
+    } catch (error) {
+      console.error("Error geocoding address:", error);
+      alert("Could not find that address. Please try another location.");
+    }
+  };
+
   return (
     <div className="map-container">
-      <MapContainer center={position} zoom={15} style={{ height: "100%", width: "100%" }}>
+      <div className="destination-controls">
+        <form onSubmit={handleAddressSearch} className="destination-search">
+          <input
+            type="text"
+            placeholder="Enter destination address..."
+            value={destinationAddress}
+            onChange={(e) => setDestinationAddress(e.target.value)}
+          />
+          <button type="submit">Find Route</button>
+        </form>
+        <div className="destination-buttons">
+          <button 
+            className={`set-destination-btn ${isSettingDestination ? 'active' : ''}`} 
+            onClick={() => setIsSettingDestination(!isSettingDestination)}
+          >
+            {isSettingDestination ? 'Click on map to set destination' : 'Set destination on map'}
+          </button>
+          {destinationMarker && (
+            <button 
+              className="clear-destination-btn" 
+              onClick={() => {
+                setDestinationMarker(null);
+                setDestinationAddress('');
+              }}
+            >
+              Clear destination
+            </button>
+          )}
+        </div>
+      </div>
+      
+      <MapContainer 
+        center={position} 
+        zoom={15} 
+        style={{ height: "100%", width: "100%" }} 
+        ref={mapRef}
+        whenCreated={(map) => {
+          map.on('click', handleMapClick);
+          mapRef.current = map;
+        }}
+      >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -74,11 +159,22 @@ const WalkabilityMap = () => {
         <SetViewOnChange coords={position} />
         
         {/* User's current location */}
-        <Marker position={position}>
-          <Popup>
-            You are here
-          </Popup>
-        </Marker>
+        {userLocation && (
+          <Marker position={userLocation} icon={userIcon}>
+            <Popup>
+              You are here
+            </Popup>
+          </Marker>
+        )}
+        
+        {/* Destination marker */}
+        {destinationMarker && (
+          <Marker position={destinationMarker}>
+            <Popup>
+              Destination
+            </Popup>
+          </Marker>
+        )}
         
         {/* Display walkability score markers */}
         {walkabilityData.map(point => (
@@ -91,6 +187,11 @@ const WalkabilityMap = () => {
               iconSize: [30, 30],
               iconAnchor: [15, 15]
             })}
+            eventHandlers={{
+              click: () => {
+                onAreaSelect(point.id);
+              }
+            }}
           >
             <Popup>
               <div>
@@ -101,11 +202,39 @@ const WalkabilityMap = () => {
           </Marker>
         ))}
         
-        {/* Display selected route (would come from the AI recommendations) */}
+        {/* Display selected route */}
         {selectedRoute && (
-          <Polyline positions={selectedRoute} color="#3388ff" weight={6} opacity={0.7} />
+          <Polyline 
+            positions={selectedRoute} 
+            color={selectedRouteType === 'safest' ? '#4CAF50' : 
+                  selectedRouteType === 'scenic' ? '#3F51B5' : 
+                  selectedRouteType === 'accessible' ? '#9C27B0' : 
+                  '#3388ff'} 
+            weight={6} 
+            opacity={0.7} 
+          />
         )}
       </MapContainer>
+      
+      <div className="walkability-legend">
+        <h4>Walkability Score</h4>
+        <div className="legend-item">
+          <div className="legend-color" style={{ backgroundColor: '#4CAF50' }}></div>
+          <span>Excellent (80-100)</span>
+        </div>
+        <div className="legend-item">
+          <div className="legend-color" style={{ backgroundColor: '#FFC107' }}></div>
+          <span>Good (60-79)</span>
+        </div>
+        <div className="legend-item">
+          <div className="legend-color" style={{ backgroundColor: '#FF9800' }}></div>
+          <span>Fair (40-59)</span>
+        </div>
+        <div className="legend-item">
+          <div className="legend-color" style={{ backgroundColor: '#F44336' }}></div>
+          <span>Poor (0-39)</span>
+        </div>
+      </div>
     </div>
   );
 };

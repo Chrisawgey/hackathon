@@ -1,64 +1,180 @@
 /* src/components/Map/Map.css */
 .map-container {
-    height: calc(100vh - 80px);
-    width: 100%;
-    position: relative;
-    z-index: 1;
+  height: calc(100vh - 80px);
+  width: 100%;
+  position: relative;
+  z-index: 1;
+}
+
+.score-marker {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+.score-marker div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  color: white;
+  font-weight: bold;
+  font-size: 12px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+.destination-controls {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  z-index: 1000;
+  background: white;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  width: 300px;
+  max-width: 90%;
+}
+
+.destination-search {
+  display: flex;
+  margin-bottom: 10px;
+}
+
+.destination-search input {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px 0 0 4px;
+  font-size: 14px;
+}
+
+.destination-search button {
+  padding: 10px 15px;
+  background-color: #3a86ff;
+  color: white;
+  border: none;
+  border-radius: 0 4px 4px 0;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.destination-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.set-destination-btn, .clear-destination-btn {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: #f8f9fa;
+  cursor: pointer;
+  font-size: 12px;
+  transition: all 0.2s;
+}
+
+.set-destination-btn:hover, .clear-destination-btn:hover {
+  background-color: #e9ecef;
+}
+
+.set-destination-btn.active {
+  background-color: #e3f2fd;
+  border-color: #3a86ff;
+  color: #3a86ff;
+  font-weight: bold;
+}
+
+.clear-destination-btn {
+  background-color: #f8d7da;
+  border-color: #f5c2c7;
+  color: #842029;
+}
+
+.walkability-legend {
+  position: absolute;
+  bottom: 30px;
+  right: 20px;
+  z-index: 1000;
+  background: white;
+  padding: 10px 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.walkability-legend h4 {
+  margin: 0 0 10px 0;
+  font-size: 14px;
+  text-align: center;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 5px;
+  font-size: 12px;
+}
+
+.legend-color {
+  width: 15px;
+  height: 15px;
+  margin-right: 10px;
+  border-radius: 50%;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .destination-controls {
+    width: calc(100% - 40px);
+    max-width: none;
   }
   
-  .score-marker {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-radius: 50%;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-  }
-  
-  .score-marker div {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    color: white;
-    font-weight: bold;
-    font-size: 12px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-  }
-  
-  .controls-container {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    z-index: 1000;
-    background: white;
-    padding: 15px;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-    max-width: 250px;
+  .destination-buttons {
+    flex-direction: column;
   }
   
   .walkability-legend {
-    position: absolute;
-    bottom: 30px;
-    right: 20px;
-    z-index: 1000;
-    background: white;
-    padding: 10px;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    bottom: 20px;
+    right: 10px;
+    padding: 8px 12px;
   }
   
   .legend-item {
-    display: flex;
-    align-items: center;
-    margin-bottom: 5px;
+    font-size: 11px;
   }
   
   .legend-color {
-    width: 20px;
-    height: 20px;
-    margin-right: 10px;
-    border-radius: 50%;
+    width: 12px;
+    height: 12px;
+    margin-right: 6px;
   }
+
+.walkability-legend {
+  position: absolute;
+  bottom: 30px;
+  right: 20px;
+  z-index: 1000;
+  background: white;
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.legend-color {
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
+  border-radius: 50%;
+}
+}
